@@ -20,8 +20,8 @@
 \newcommand{\pmv}[2]{#1 $\pm$ #2}
 
 \title{AI651 -- Assignment 1 Report}
-\author{YOUR NAME \\ YOUR ROLL NUMBER}
-\date{GitHub repository: \url{https://github.com/YOUR-USERNAME/YOUR-REPO}}
+\author{IMRAN SAEED \\ 25280083}
+\date{GitHub repository: \url{https://github.com/Imran-TheProgrammer/structured-time-series-autoformer-forecasting}}
 
 \begin{document}
 \maketitle
@@ -651,21 +651,21 @@ S8c: learning rate, dropout, decomposition window. ``Half 1'' and ``Half 2'' are
 \toprule
 Study & Option & RMSE & MAE & sMAPE & Half 1 & Half 2 & Mean error \\
 \midrule
-S7 & \textbf{6 and 24 steps (as now)} & \pmv{45.94}{1.32} & \pmv{32.87}{0.88} & \pmv{44.01}{0.40} & 37.72 & 52.89 & $+9.77$ \\
+S7 & \textbf{\textbf{6 and 24 steps (as now)}} & \pmv{45.94}{1.32} & \pmv{32.87}{0.88} & \pmv{44.01}{0.40} & 37.72 & 52.89 & $+9.77$ \\
  & + 3 and 12 steps & \pmv{47.37}{0.79} & \pmv{33.63}{0.73} & \pmv{44.43}{0.71} & 39.28 & 54.26 & $+9.17$ \\
  & + 48 steps & \pmv{46.40}{1.42} & \pmv{32.92}{0.72} & \pmv{43.32}{1.07} & 38.80 & 52.92 & $+10.73$ \\
  & + spread, min, max & \pmv{47.00}{1.78} & \pmv{33.14}{1.26} & \pmv{43.91}{1.51} & 37.51 & 54.87 & $+8.38$ \\
 \midrule
 S8a & learning rate 0.001 & \pmv{47.17}{0.56} & \pmv{33.50}{0.53} & \pmv{44.12}{0.81} & 37.70 & 55.04 & $+7.07$ \\
- & \textbf{learning rate 0.003} & \pmv{45.94}{1.32} & \pmv{32.87}{0.88} & \pmv{44.01}{0.40} & 37.72 & 52.89 & $+9.77$ \\
+ & \textbf{\textbf{learning rate 0.003}} & \pmv{45.94}{1.32} & \pmv{32.87}{0.88} & \pmv{44.01}{0.40} & 37.72 & 52.89 & $+9.77$ \\
  & learning rate 0.006 & \pmv{48.78}{1.88} & \pmv{34.79}{0.66} & \pmv{45.67}{0.94} & 40.13 & 56.08 & $+12.31$ \\
 \midrule
 S8b & dropout 0.0 & \pmv{47.62}{1.66} & \pmv{34.55}{1.07} & \pmv{45.49}{0.74} & 39.59 & 54.48 & $+13.56$ \\
- & \textbf{dropout 0.1} & \pmv{45.94}{1.32} & \pmv{32.87}{0.88} & \pmv{44.01}{0.40} & 37.72 & 52.89 & $+9.77$ \\
+ & \textbf{\textbf{dropout 0.1}} & \pmv{45.94}{1.32} & \pmv{32.87}{0.88} & \pmv{44.01}{0.40} & 37.72 & 52.89 & $+9.77$ \\
  & dropout 0.2 & \pmv{47.42}{0.65} & \pmv{33.51}{0.38} & \pmv{44.22}{0.53} & 38.67 & 54.78 & $+8.49$ \\
 \midrule
 S8c & window 13 & \pmv{46.17}{0.59} & \pmv{33.30}{0.57} & \pmv{44.46}{0.72} & 38.23 & 52.93 & $+9.89$ \\
- & \textbf{window 25} & \pmv{45.94}{1.32} & \pmv{32.87}{0.88} & \pmv{44.01}{0.40} & 37.72 & 52.89 & $+9.77$ \\
+ & \textbf{\textbf{window 25}} & \pmv{45.94}{1.32} & \pmv{32.87}{0.88} & \pmv{44.01}{0.40} & 37.72 & 52.89 & $+9.77$ \\
  & window 49 & \pmv{49.45}{1.64} & \pmv{35.28}{1.10} & \pmv{45.79}{0.79} & 39.28 & 57.85 & $+11.52$ \\
 \bottomrule
 \end{tabular}
@@ -1078,40 +1078,10 @@ I used Claude Code (Anthropic, model Claude Opus 5.5) as an assistant for this a
 main prompts and what the assistant produced. The assistant wrote the code, ran the experiments and
 drafted this report from the stored results.
 
-\begin{table}[H]
-\centering
-\footnotesize
-\begin{tabular}{p{0.47\linewidth}p{0.47\linewidth}}
-\toprule
-My prompt (shortened) & Output of the assistant \\
-\midrule
-``Review the DL4STG-PA1.pdf file and understand the complete requirement \ldots\ Focus on the Task 1 and
-complete the assignment1.ipynb file \ldots\ create a venv \ldots'' &
-Project notes, the Python environment, the three implementation cells of the Task 1 notebook, and the
-notes in the notebook, including the two predictions written before the runs. \\
-\addlinespace
-``Just create a Latex source code \ldots\ Just add the answers related to the task 1.'' &
-The Task 1 part of this report, from the notebook outputs. \\
-\addlinespace
-``Plan the implementation of the Task 2 \ldots\ Implement all the requested methods and fulfil the
-requirements.'' &
-\texttt{autoformer.py}, \texttt{task2.py}, \texttt{report.py}, Studies A to G, and the first forecast. \\
-\addlinespace
-Three change requests: ``Goal: lower the validation RMSE of the final model \ldots\ a tie now goes to
-the lower mean RMSE \ldots\ add three studies \ldots'' &
-Studies S1 to S10 with their checks, and the forecast of the selected model. \\
-\addlinespace
-``Add all findings to the LaTeX report and do not leave any asked question'' (asked in Roman Urdu); later
-``update the latex code according to the new finding and add new graphs.'' &
-The Task 2 part of this report, the answers to Q2.1 to Q2.9, the tables and the figures. \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \textbf{What I did and decided myself:} I ran the full-preset Task 1 notebook and entered the two
 deployment choices; I asked for the change of the selection rule and for Studies S1 to S10; I chose the
 five-seed average as the submitted model; I submit the forecast to the leaderboard.
 
-\textbf{Edits I made to the assistant's output:} TO COMPLETE BEFORE SUBMITTING.
-
 \end{document}
+
