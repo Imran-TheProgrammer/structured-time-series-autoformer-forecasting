@@ -1,0 +1,11 @@
+# local Python environment (about 7 GB) and caches
+.venv-dl4stg-pa1/
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
+
+# working notes of the AI assistant, not part of the submission
+CLAUDE.md
+
+# local scoring script and the values of the 168 forecast steps; never used by the code
+test/

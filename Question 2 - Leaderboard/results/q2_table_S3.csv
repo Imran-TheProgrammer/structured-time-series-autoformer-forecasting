@@ -1,0 +1,4 @@
+option,seeds,P,epochs,rmse_mean,rmse_std,mae_mean,mae_std,smape_mean,smape_std,rmse_half1,rmse_half2,mean_error,chosen
+one linear layer (as now),5,11850,6,56.70108,0.46757,40.50235,0.82783,52.504,1.34925,43.44398,67.39548,6.31188,False
+two-layer network,5,12938,6,50.75606,1.77662,35.54568,0.9357,46.59168,0.74065,39.30083,60.05077,5.71313,True
+linear layer + means and changes over 6 and 24 steps,5,13386,6,53.64765,0.32406,37.00031,0.62619,48.54579,0.92393,42.22511,63.0232,0.69743,False

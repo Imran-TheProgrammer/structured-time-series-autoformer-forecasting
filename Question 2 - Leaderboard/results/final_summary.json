@@ -1,0 +1,58 @@
+{
+ "final_config": {
+  "seq_len": 96,
+  "d": 16,
+  "kernel": 25,
+  "factor": 1,
+  "dropout": 0.1,
+  "trend_start": "anchor",
+  "target": "raw+log",
+  "external": "past+future",
+  "variables": "all+roll6+roll24+diff6+diff24",
+  "daily": true,
+  "window_norm": false,
+  "epochs": 4,
+  "batch": 64,
+  "lr": 0.003,
+  "marks_net": "mlp",
+  "marks_hidden": 2
+ },
+ "P": 17866,
+ "E": 8,
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "single_model": {
+  "rmse": [
+   45.94166801318845,
+   1.3197182329367685
+  ],
+  "mae": [
+   32.86635583675813,
+   0.8783953909803481
+  ],
+  "smape": [
+   44.01333052619361,
+   0.3999332721081357
+  ]
+ },
+ "average_of_seeds": {
+  "rmse": 43.917336205511795,
+  "mae": 31.554961630182362,
+  "smape": 42.35010444101154,
+  "rmse_half1": 36.17886402944918,
+  "rmse_half2": 50.48321143028188,
+  "mean_error": 9.773084108648634
+ },
+ "block_rmse_average": {
+  "mean": 42.08038336180198,
+  "std": 12.568761096931425,
+  "min": 17.610980490091624,
+  "max": 85.31786653941053,
+  "share_within_10_of_mean": 0.6079545454545454
+ }
+}

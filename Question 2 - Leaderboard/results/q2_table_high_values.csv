@@ -1,0 +1,21 @@
+forecast,seeds,share_of_squared_error_on_top_10pct,mean_error_top_10pct,mean_error_rest,rmse_rest,rmse,threshold
+"final model, single seeds",5,38.429,-45.461,15.899,37.993,45.942,210.0
+"final model, average of seeds",1,38.96,-45.461,15.899,36.165,43.917,210.0
+B2: target = raw,5,38.108,-99.689,26.445,50.031,60.335,210.0
+B2: target = log,5,57.399,-115.099,11.402,39.587,57.561,210.0
+I: variables = all,3,56.875,-112.538,11.475,39.531,57.115,210.0
+I: variables = all+roll,3,66.524,-134.353,2.463,35.77,58.696,210.0
+I: variables = all+diff,3,61.205,-122.251,8.412,37.404,57.051,210.0
+I: variables = all+roll+diff,3,61.943,-122.692,7.475,36.912,56.969,210.0
+S2: raw,5,38.108,-99.689,26.445,50.031,60.335,210.0
+S2: log,5,57.399,-115.099,11.402,39.587,57.561,210.0
+S2: average of raw and log,5,49.474,-107.394,18.923,42.474,56.701,210.0
+S3: one linear layer (as now),5,49.474,-107.394,18.923,42.474,56.701,210.0
+S3: two-layer network,5,45.029,-79.56,15.171,39.654,50.756,210.0
+S3: linear layer + means and changes over 6 and 24 steps,5,54.401,-107.323,12.678,38.165,53.648,210.0
+S4: two-layer network (as now),5,45.029,-79.56,15.171,39.654,50.756,210.0
+S4: two-layer network + means and changes,5,38.295,-55.663,15.07,38.649,46.685,210.0
+S7: (a) means and changes over 6 and 24 steps (as now),5,38.429,-45.461,15.899,37.993,45.942,210.0
+"S7: (b) as (a), plus 3 and 12 steps",5,39.36,-44.927,15.168,38.875,47.372,210.0
+"S7: (c) as (a), plus 48 steps",5,34.209,-39.194,16.262,39.668,46.404,210.0
+"S7: (d) as (a), plus spread, minimum, maximum over 24 steps",5,38.083,-52.925,15.183,38.941,47.001,210.0

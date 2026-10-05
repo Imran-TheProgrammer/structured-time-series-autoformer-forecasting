@@ -1,0 +1,12 @@
+\begin{tabular}{llrrlrrrrrrrr}
+\toprule
+fold & option & seeds & forecasts & trained_on_time_idx & rmse_mean & mae_mean & smape_mean & rmse_std & mae_std & smape_std & mean_error & rmse_of_seed_average \\
+\midrule
+first half of validation & without the 13 weeks before it & 5 & 85 & 1..37104 & 38.537000 & 29.336000 & 43.925000 & 1.057000 & 0.733000 & 0.976000 & 11.395000 & 36.915000 \\
+first half of validation & with the 13 weeks before it & 5 & 85 & 1..39288 & 37.689000 & 28.898000 & 43.500000 & 0.881000 & 0.855000 & 0.931000 & 12.003000 & 36.188000 \\
+first half of validation & only the two years before it & 5 & 85 & 21769..39288 & 38.530000 & 28.296000 & 43.504000 & 0.298000 & 0.281000 & 0.644000 & -0.051000 & 37.273000 \\
+second half of validation & without the 13 weeks before it & 5 & 85 & 1..39288 & 53.192000 & 36.849000 & 44.442000 & 1.890000 & 1.214000 & 1.045000 & 7.230000 & 50.785000 \\
+second half of validation & with the 13 weeks before it & 5 & 85 & 1..41472 & 55.132000 & 37.892000 & 44.589000 & 1.006000 & 0.585000 & 1.146000 & 7.153000 & 52.521000 \\
+second half of validation & only the two years before it & 5 & 85 & 23953..41472 & 59.957000 & 42.706000 & 50.510000 & 1.483000 & 0.776000 & 0.846000 & 13.195000 & 57.821000 \\
+\bottomrule
+\end{tabular}

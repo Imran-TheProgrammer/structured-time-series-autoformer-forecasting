@@ -1,0 +1,4 @@
+option,seeds,squared_error_dropout_on,mean_error_dropout_on,squared_error_dropout_off,mean_error_dropout_off
+mean,5,0.495,0.003,1.297,0.778
+fade,5,0.421,0.005,0.406,-0.001
+anchor,5,0.416,0.008,0.4,-0.002

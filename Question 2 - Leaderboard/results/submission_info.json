@@ -1,0 +1,52 @@
+{
+ "P_total_trainable_parameters": 89330,
+ "E_training_epochs": 40,
+ "models": 10,
+ "units": 5,
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "config": {
+  "seq_len": 96,
+  "d": 16,
+  "kernel": 25,
+  "factor": 1,
+  "dropout": 0.1,
+  "trend_start": "anchor",
+  "target": "raw+log",
+  "external": "past+future",
+  "variables": "all+roll6+roll24+diff6+diff24",
+  "daily": true,
+  "window_norm": false,
+  "epochs": 4,
+  "batch": 64,
+  "lr": 0.003,
+  "marks_net": "mlp",
+  "marks_hidden": 2
+ },
+ "trained_on_time_idx": [
+  1,
+  39288
+ ],
+ "forecast_time_idx": [
+  43657,
+  43824
+ ],
+ "validation_of_this_average": {
+  "rmse": 43.917336205511795,
+  "mae": 31.554961630182362,
+  "smape": 42.35010444101154,
+  "rmse_half1": 36.17886402944918,
+  "rmse_half2": 50.48321143028188,
+  "mean_error": 9.773084108648634
+ },
+ "forecast_min_mean_max": [
+  6.471289702613559,
+  107.31617873102297,
+  274.881027452294
+ ]
+}

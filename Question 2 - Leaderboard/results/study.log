@@ -1,0 +1,415 @@
+device cuda; training rows 1..39288; validation rows 39289..43656; 176 validation forecasts
+                                          baseline   rmse   mae  smape
+                                     training mean  88.74 68.48  79.48
+                                        last value 124.06 86.54  88.25
+                                  mean of last 168  96.11 71.78  81.30
+same-time linear fit on optional file (raw target)  72.11 53.49  67.50
+same-time linear fit on optional file (log target)  73.53 48.60  59.28
+
+Study A: Starting trend: window mean (paper), fading level, or fading gap to the last value
+ trend_start = mean
+ trend_start = fade
+ trend_start = anchor
+option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+  mean      5 22084       3     119.75      4.38    103.89     4.39       92.79       1.62      116.06      123.24       91.04
+  fade      5 22085       3      60.85      1.81     45.43     1.82       65.65       0.56       48.24       71.25       11.86
+anchor      5 22085       3      60.07      1.12     44.52     1.06       64.96       0.44       48.04       70.03       10.31
+ -> chosen: trend_start = anchor
+
+Study B: Target scale: raw or log1p
+ target = raw
+ target = log
+option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+   raw      3 22085       3      59.95      1.56     44.30     1.41       64.94       0.62       46.73       70.74        9.34
+   log      3 22085       3      59.09      1.46     38.42     1.04       48.01       1.14       41.49       72.52       -1.66
+ -> chosen: target = log
+
+Study C: History length
+ seq_len = 96
+ seq_len = 168
+ seq_len = 336
+option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+    96      3 22085       3      57.29      0.95     38.42     1.19       48.34       1.58       41.96       69.30       -0.25
+   168      3 22085       3      59.09      1.46     38.42     1.04       48.01       1.14       41.49       72.52       -1.66
+   336      3 22085       3      59.88      0.88     38.24     0.88       47.43       1.66       40.58       74.29       -7.88
+ -> chosen: seq_len = 96
+
+Study D: Model width (sets the parameter count P)
+ d = 8
+ d = 16
+ d = 32
+ d = 64
+option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+     8      3  1685       3      59.88      0.22     39.92     0.27       50.90       0.57       40.13       74.57       -0.56
+    16      3  5925       3      57.12      0.35     38.32     0.62       48.86       0.73       40.13       70.10       -0.91
+    32      3 22085       3      57.29      0.95     38.42     1.19       48.34       1.58       41.96       69.30       -0.25
+    64      3 85125       3      59.03      2.48     39.39     0.86       49.25       1.30       42.83       71.65       -1.09
+ -> chosen: d = 16
+
+Study E: Training epochs (sets E)
+ epochs = 1
+ epochs = 2
+ epochs = 3
+ epochs = 4
+ epochs = 6
+option  seeds    P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+     1      3 5925       1      59.71      0.11     39.48     0.36       50.02       0.68       40.61       74.03       -4.00
+     2      3 5925       2      57.58      0.61     38.68     0.92       49.53       1.50       40.61       70.57       -2.50
+     3      3 5925       3      57.12      0.35     38.32     0.62       48.86       0.73       40.13       70.10       -0.91
+     4      3 5925       4      57.66      0.95     37.94     1.15       47.82       1.67       40.39       70.84       -3.81
+     6      3 5925       6      59.67      1.55     38.53     0.93       47.72       1.93       40.50       74.00       -7.07
+ -> chosen: epochs = 3
+
+Study G1: Number of delays, k = floor(c ln L)
+ factor = 1
+ factor = 2
+ factor = 3
+option  seeds    P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+     1      3 5925       3      57.12      0.35     38.32     0.62       48.86       0.73       40.13       70.10       -0.91
+     2      3 5925       3      57.61      0.25     38.74     0.21       49.30       0.36       40.40       70.75        0.59
+     3      3 5925       3      58.24      0.88     38.89     0.93       49.08       1.10       40.60       71.64        0.42
+ -> chosen: factor = 1
+
+Study G2: Window-relative normalisation
+ window_norm = False
+ window_norm = True
+option  seeds    P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+ False      3 5925       3      57.12      0.35     38.32     0.62       48.86       0.73       40.13       70.10       -0.91
+  True      3 5925       3      93.08      2.38     50.21     1.34       58.14       1.50       50.52      121.54       -3.10
+ -> chosen: window_norm = False
+
+Study G3: Daily sin/cos position features
+ daily = False
+ daily = True
+option  seeds    P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+ False      3 5861       3      58.87      0.74     39.92     0.18       51.00       0.25       41.92       71.92        2.49
+  True      3 5925       3      57.12      0.35     38.32     0.62       48.86       0.73       40.13       70.10       -0.91
+ -> chosen: daily = True
+
+Study F1: Optional file: none, past only, past + future
+ external = none
+ external = past
+ external = past+future
+     option  seeds    P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+       none      5 5605       3      88.49      0.04     59.79     0.01       74.35       0.03       53.11      113.31      -25.03
+       past      5 5925       3      88.11      0.41     59.41     0.23       73.90       0.25       52.73      112.90      -23.59
+past+future      5 5925       3      57.56      0.79     38.41     0.46       48.78       0.53       40.31       70.72       -1.23
+ -> chosen: external = past+future
+
+Study F2: Optional file: which variables
+ variables = flags
+ variables = continuous
+ variables = all
+    option  seeds    P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+     flags      3 5733       3      72.25      0.59     47.32     0.43       57.01       0.61       45.55       91.46       -7.95
+continuous      3 5797       3      62.30      4.97     41.09     1.31       52.47       0.71       45.39       75.39       -7.99
+       all      3 5925       3      57.12      0.35     38.32     0.62       48.86       0.73       40.13       70.10       -0.91
+ -> chosen: variables = all
+
+Study B2: Target scale again, now at the final settings
+ target = raw
+ target = log
+option  seeds    P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+   raw      5 5925       3      60.33      1.02     45.57     1.36       65.04       0.59       50.10       69.06       13.85
+   log      5 5925       3      57.56      0.79     38.41     0.46       48.78       0.53       40.31       70.72       -1.23
+ -> chosen: target = log
+
+Study I: Extra features from the optional file: 24-step mean and 24-step change
+ variables = all
+ variables = all+roll
+ variables = all+diff
+ variables = all+roll+diff
+       option  seeds    P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+          all      3 5925       3      57.12      0.35     38.32     0.62       48.86       0.73       40.13       70.10       -0.91
+     all+roll      3 6117       3      58.70      1.03     36.91     0.03       45.63       0.93       40.19       72.61      -11.20
+     all+diff      3 6117       3      57.05      0.91     37.38     0.22       47.12       0.38       40.32       69.87       -4.63
+all+roll+diff      3 6309       3      56.97      1.57     37.08     0.35       46.71       1.28       40.57       69.57       -5.52
+ -> chosen: variables = all
+
+Configuration picked by the first studies: {'seq_len': 96, 'd': 16, 'kernel': 25, 'factor': 1, 'dropout': 0.1, 'trend_start': 'anchor', 'target': 'log', 'external': 'past+future', 'variables': 'all', 'daily': True, 'window_norm': False, 'epochs': 3, 'batch': 64, 'lr': 0.003}
+
+Check A2: Study A again without dropout
+option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+  mean      5 22084       3      67.15      1.21     49.74     0.78       72.57       0.72       51.24       79.94        7.39
+  fade      5 22085       3      61.51      1.28     45.95     1.02       65.91       0.93       49.20       71.71       11.30
+anchor      5 22085       3      59.71      0.92     44.11     1.08       64.32       1.34       48.16       69.34        9.94
+
+Check H: final configuration with and without dropout
+option  seeds    P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+   0.0      5 5925       3      58.03      0.74     38.20     0.53       47.87       0.51       40.99       71.10       -4.12
+   0.1      5 5925       3      57.56      0.79     38.41     0.46       48.78       0.53       40.31       70.72       -1.23
+
+Single model 57.56 ± 0.79, average of seeds 55.90 -> average the seeds: True
+
+Study S1: Width and epochs together
+ width 16, 3 epochs
+ width 16, 10 epochs
+ width 16, 20 epochs
+ width 32, 3 epochs
+ width 32, 10 epochs
+ width 32, 20 epochs
+ width 64, 3 epochs
+ width 64, 10 epochs
+ width 64, 20 epochs
+             option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+ width 16, 3 epochs      3  5925       3      57.12      0.35     38.32     0.62       48.86       0.73       40.13       70.10       -0.91
+width 16, 10 epochs      3  5925      10      62.37      2.84     39.11     0.67       47.97       0.52       40.28       78.44      -13.20
+width 16, 20 epochs      3  5925      20      61.55      2.87     39.37     1.09       48.25       1.24       42.89       75.68       -9.28
+ width 32, 3 epochs      3 22085       3      57.29      0.95     38.42     1.19       48.34       1.58       41.96       69.30       -0.25
+width 32, 10 epochs      3 22085      10      66.02      3.37     42.63     4.49       50.47       3.47       47.20       80.33       -4.50
+width 32, 20 epochs      3 22085      20      66.01      1.46     41.56     2.17       49.72       1.66       45.01       81.72       -9.71
+ width 64, 3 epochs      3 85125       3      59.03      2.48     39.39     0.86       49.25       1.30       42.83       71.65       -1.09
+width 64, 10 epochs      3 85125      10      58.89      1.16     38.59     0.37       48.20       0.42       44.14       70.62       -7.38
+width 64, 20 epochs      3 85125      20      58.88      3.48     38.69     1.56       47.95       1.17       43.48       70.99       -6.52
+ -> chosen: width 16, 3 epochs   (within one seed-spread of it: width 32, 3 epochs)
+
+Study S1b: Encoder layers, at the pair S1 picks
+ 1 encoder layer
+ 2 encoder layers
+          option  seeds    P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+ 1 encoder layer      3 5925       3      57.12      0.35     38.32     0.62       48.86       0.73       40.13       70.10       -0.91
+2 encoder layers      3 8038       3      57.69      0.73     38.68     0.55       49.49       0.80       40.96       70.55        0.21
+ -> chosen: 1 encoder layer
+
+Study S2: Target scale, at the configuration S1 picks
+ raw
+ log
+ average of raw and log
+                option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+                   raw      5  5925       3      60.33      1.02     45.57     1.36       65.04       0.59       50.10       69.06       13.85
+                   log      5  5925       3      57.56      0.79     38.41     0.46       48.78       0.53       40.31       70.72       -1.23
+average of raw and log      5 11850       6      56.70      0.47     40.50     0.83       52.50       1.35       43.44       67.40        6.31
+ -> chosen: average of raw and log
+
+Study S3: How the optional variables enter, at the configuration S2 picks
+ one linear layer (as now)
+ two-layer network
+ linear layer + means and changes over 6 and 24 steps
+                                              option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+                           one linear layer (as now)      5 11850       6      56.70      0.47     40.50     0.83       52.50       1.35       43.44       67.40        6.31
+                                   two-layer network      5 12938       6      50.76      1.78     35.55     0.94       46.59       0.74       39.30       60.05        5.71
+linear layer + means and changes over 6 and 24 steps      5 13386       6      53.65      0.32     37.00     0.63       48.55       0.92       42.23       63.02        0.70
+ -> chosen: two-layer network
+
+Final check after S1-S3: the current configuration against the pick of these studies
+stage configuration  seeds  P_total  E_total  single_rmse_mean  single_rmse_std  average_rmse  average_mae  average_smape  average_rmse_half1  average_rmse_half2  average_mean_error
+S1-S3       current      5    29625       15             57.56             0.79         55.90        37.32          47.98               39.02               68.76               -1.23
+S1-S3           new      5    64690       30             50.76             1.78         48.96        34.30          45.10               37.79               58.02                5.71
+ new configuration differs: True; gain of the five-seed average 6.94; one seed-spread 1.78; no worse in either half: True (not part of this check) -> keep the new configuration: True
+
+Study S4: Two-layer network with and without the means and changes over 6 and 24 steps
+ two-layer network (as now)
+ two-layer network + means and changes
+                               option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+           two-layer network (as now)      5 12938       6      50.76      1.78     35.55     0.94       46.59       0.74       39.30       60.05        5.71
+two-layer network + means and changes      5 14474       6      46.69      0.49     33.24     0.30       44.31       0.43       37.57       54.29        8.01
+ -> chosen: two-layer network + means and changes
+
+Study S5: Hidden width of that network, at the configuration S4 picks
+ model width (as now)
+ twice the model width
+ four times the model width
+                    option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+      model width (as now)      5 14474       6      46.69      0.49     33.24     0.30       44.31       0.43       37.57       54.29        8.01
+     twice the model width      5 17866       6      45.99      1.15     32.86     0.74       43.86       0.74       37.14       53.38        9.05
+four times the model width      5 24650       6      46.53      1.10     33.04     0.71       43.66       0.76       38.02       53.69        8.36
+ -> chosen: twice the model width   (within one seed-spread of it: model width (as now); four times the model width)
+
+Study S5b: Two against three layers in that network, at the width S5 picks
+ 2 layers
+ 3 layers
+  option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+2 layers      5 17866       6      45.99      1.15     32.86     0.74       43.86       0.74       37.14       53.38        9.05
+3 layers      5 22090       6      50.79      2.46     35.65     1.44       46.19       1.09       40.99       58.94       11.28
+ -> chosen: 2 layers
+
+Study S6: Epochs again, at the configuration S5 picks
+ 2 epochs
+ 3 epochs
+ 4 epochs
+ 6 epochs
+  option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+2 epochs      5 17866       4      46.07      0.71     33.04     0.51       44.04       0.54       37.13       53.53        8.73
+3 epochs      5 17866       6      45.99      1.15     32.86     0.74       43.86       0.74       37.14       53.38        9.05
+4 epochs      5 17866       8      45.94      1.32     32.87     0.88       44.01       0.40       37.72       52.89        9.77
+6 epochs      5 17866      12      48.23      0.68     34.23     0.34       45.08       0.65       39.32       55.71       11.06
+ -> chosen: 4 epochs   (within one seed-spread of it: 2 epochs; 3 epochs)
+
+Final check after S4-S6: the current configuration against the pick of these studies
+stage configuration  seeds  P_total  E_total  single_rmse_mean  single_rmse_std  average_rmse  average_mae  average_smape  average_rmse_half1  average_rmse_half2  average_mean_error
+S4-S6       current      5    64690       30             50.76             1.78         48.96        34.30          45.10               37.79               58.02                5.71
+S4-S6           new      5    89330       40             45.94             1.32         43.92        31.55          42.35               36.18               50.48                9.77
+ new configuration differs: True; gain of the five-seed average 5.05; one seed-spread 1.78; no worse in either half: True (not part of this check) -> keep the new configuration: True
+
+Study S7: More features from the optional file
+ (a) means and changes over 6 and 24 steps (as now)
+ (b) as (a), plus 3 and 12 steps
+ (c) as (a), plus 48 steps
+ (d) as (a), plus spread, minimum, maximum over 24 steps
+                                                 option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+     (a) means and changes over 6 and 24 steps (as now)      5 17866       8      45.94      1.32     32.87     0.88       44.01       0.40       37.72       52.89        9.77
+                        (b) as (a), plus 3 and 12 steps      5 20938       8      47.37      0.79     33.63     0.73       44.43       0.71       39.28       54.26        9.17
+                              (c) as (a), plus 48 steps      5 19402       8      46.40      1.42     32.92     0.72       43.32       1.07       38.80       52.92       10.73
+(d) as (a), plus spread, minimum, maximum over 24 steps      5 20170       8      47.00      1.78     33.14     1.26       43.91       1.51       37.51       54.87        8.38
+ -> chosen: (a) means and changes over 6 and 24 steps (as now)   (within one seed-spread of it: (c) as (a), plus 48 steps; (d) as (a), plus spread, minimum, maximum over 24 steps)
+
+Study S8a: Learning rate, at the configuration S7 picks
+ learning rate 0.001
+ learning rate 0.003
+ learning rate 0.006
+             option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+learning rate 0.001      5 17866       8      47.17      0.56     33.50     0.53       44.12       0.81       37.70       55.04        7.07
+learning rate 0.003      5 17866       8      45.94      1.32     32.87     0.88       44.01       0.40       37.72       52.89        9.77
+learning rate 0.006      5 17866       8      48.78      1.88     34.79     0.66       45.67       0.94       40.13       56.08       12.31
+ -> chosen: learning rate 0.003   (within one seed-spread of it: learning rate 0.001)
+
+Study S8b: Dropout, at the configuration S8a picks
+ dropout 0.0
+ dropout 0.1
+ dropout 0.2
+     option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+dropout 0.0      5 17866       8      47.62      1.66     34.55     1.07       45.49       0.74       39.59       54.48       13.56
+dropout 0.1      5 17866       8      45.94      1.32     32.87     0.88       44.01       0.40       37.72       52.89        9.77
+dropout 0.2      5 17866       8      47.42      0.65     33.51     0.38       44.22       0.53       38.67       54.78        8.49
+ -> chosen: dropout 0.1
+
+Study S8c: Decomposition window, at the configuration S8b picks
+ window 13
+ window 25
+ window 49
+   option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+window 13      5 17866       8      46.17      0.59     33.30     0.57       44.46       0.72       38.23       52.93        9.89
+window 25      5 17866       8      45.94      1.32     32.87     0.88       44.01       0.40       37.72       52.89        9.77
+window 49      5 17866       8      49.45      1.64     35.28     1.10       45.79       0.79       39.28       57.85       11.52
+ -> chosen: window 25   (within one seed-spread of it: window 13)
+
+Study S9: recent data, at the configuration S8 picks
+                     fold                         option  seeds  forecasts trained_on_time_idx  rmse_mean  mae_mean  smape_mean  rmse_std  mae_std  smape_std  mean_error  rmse_of_seed_average
+ first half of validation without the 13 weeks before it      5         85            1..37104      38.54     29.34       43.93      1.06     0.73       0.98       11.40                 36.91
+ first half of validation    with the 13 weeks before it      5         85            1..39288      37.69     28.90       43.50      0.88     0.86       0.93       12.00                 36.19
+ first half of validation   only the two years before it      5         85        21769..39288      38.53     28.30       43.50      0.30     0.28       0.64       -0.05                 37.27
+second half of validation without the 13 weeks before it      5         85            1..39288      53.19     36.85       44.44      1.89     1.21       1.05        7.23                 50.79
+second half of validation    with the 13 weeks before it      5         85            1..41472      55.13     37.89       44.59      1.01     0.59       1.15        7.15                 52.52
+second half of validation   only the two years before it      5         85        23953..41472      59.96     42.71       50.51      1.48     0.78       0.85       13.20                 57.82
+ with the newest 13 weeks better in both halves: False; two years best in both halves: False -> the final models train on rows: to validation
+
+Study S10: average of five units against average of ten units
+               option  forecasts_scored      P  E  rmse_mean  mae_mean  smape_mean  rmse_std  mae_std  smape_std  rmse_half1  rmse_half2  mean_error
+average of five units               252  89330 40      44.37     31.65       42.07      0.51     0.36       0.48       36.22       51.23        9.16
+ average of ten units                 1 178660 80      44.11     31.48       41.85       NaN      NaN        NaN       36.03       50.93        9.16
+ units 0 to 4: RMSE 43.92; all ten: RMSE 44.11 -> units to average: 5
+
+Final check after S7-S8: the current configuration against the pick of these studies
+stage configuration  seeds  P_total  E_total  single_rmse_mean  single_rmse_std  average_rmse  average_mae  average_smape  average_rmse_half1  average_rmse_half2  average_mean_error
+S7-S8       current      5    89330       40             45.94             1.32         43.92        31.55          42.35               36.18               50.48                9.77
+S7-S8           new      5    89330       40             45.94             1.32         43.92        31.55          42.35               36.18               50.48                9.77
+ new configuration differs: False; gain of the five-seed average 0.00; one seed-spread 1.32; no worse in either half: True -> keep the new configuration: False
+
+Ablation of the optional file on the final configuration
+  35029841f21b seed 0: RMSE  84.50  MAE  63.69  sMAPE  75.0  P   6757   17.0s
+  3cdd7297d0a4 seed 0: RMSE  88.38  MAE  59.66  sMAPE  74.2  P   6757   16.7s
+  7629368337d7 seed 1: RMSE  84.64  MAE  64.24  sMAPE  75.4  P   6757   16.6s
+  ec214e841eba seed 1: RMSE  88.51  MAE  59.81  sMAPE  74.4  P   6757   16.7s
+  979e7aee4b27 seed 2: RMSE  84.65  MAE  63.84  sMAPE  75.2  P   6757   16.7s
+  c3ca97547699 seed 2: RMSE  88.39  MAE  59.75  sMAPE  74.3  P   6757   16.6s
+  ae9d3c4e5c38 seed 3: RMSE  84.62  MAE  63.70  sMAPE  75.1  P   6757   16.7s
+  110cb969a1a5 seed 3: RMSE  88.51  MAE  59.76  sMAPE  74.3  P   6757   16.6s
+  ad40685e7e1b seed 4: RMSE  84.87  MAE  64.43  sMAPE  75.6  P   6757   16.7s
+  1a8ccc4772d8 seed 4: RMSE  88.35  MAE  59.63  sMAPE  74.2  P   6757   16.6s
+  d14585b8ae5c seed 0: RMSE  85.08  MAE  63.60  sMAPE  74.7  P   8933   16.7s
+  04aed9bfc9d8 seed 0: RMSE  88.54  MAE  59.70  sMAPE  73.9  P   8933   16.8s
+  5e364e38a49b seed 1: RMSE  87.59  MAE  64.24  sMAPE  75.4  P   8933   16.7s
+  f796491335b0 seed 1: RMSE  88.74  MAE  59.62  sMAPE  73.8  P   8933   16.9s
+  ab51feaa1c99 seed 2: RMSE  87.91  MAE  64.53  sMAPE  75.7  P   8933   16.8s
+  cdc9a2f77191 seed 2: RMSE  87.97  MAE  59.62  sMAPE  74.0  P   8933   17.2s
+  24844973880b seed 3: RMSE  87.12  MAE  64.04  sMAPE  75.2  P   8933   17.2s
+  afcda2774f87 seed 3: RMSE  89.24  MAE  59.84  sMAPE  74.1  P   8933   17.3s
+  96828e1d5389 seed 4: RMSE  87.11  MAE  64.12  sMAPE  75.7  P   8933   17.3s
+  99862f4a96ab seed 4: RMSE  88.90  MAE  59.88  sMAPE  74.2  P   8933   17.4s
+  0fb4e641f419 seed 0: RMSE  68.27  MAE  49.89  sMAPE  64.3  P   7013   17.1s
+  7bc8ac0e7d73 seed 0: RMSE  70.54  MAE  45.61  sMAPE  55.0  P   7013   17.2s
+  53babe2bc8bf seed 1: RMSE  68.49  MAE  50.48  sMAPE  64.4  P   7013   17.2s
+  e551da806b12 seed 1: RMSE  69.82  MAE  46.37  sMAPE  55.8  P   7013   17.1s
+  0b3573cfc5ed seed 2: RMSE  64.90  MAE  48.22  sMAPE  63.7  P   7013   17.1s
+  3670539c2e6a seed 2: RMSE  68.73  MAE  45.48  sMAPE  55.1  P   7013   17.1s
+  6e8df35de2c6 seed 3: RMSE  69.33  MAE  52.02  sMAPE  66.2  P   7013   17.1s
+  31877fbc1b9c seed 3: RMSE  70.31  MAE  45.42  sMAPE  55.2  P   7013   17.2s
+  0a4bafc045fd seed 4: RMSE  68.87  MAE  50.59  sMAPE  64.6  P   7013   17.1s
+  cd50605d1dcf seed 4: RMSE  70.38  MAE  45.60  sMAPE  54.6  P   7013   17.2s
+  6fc760c07aa6 seed 0: RMSE  49.70  MAE  36.93  sMAPE  57.9  P   8677   17.2s
+  9a5153b921ad seed 0: RMSE  44.90  MAE  31.05  sMAPE  41.8  P   8677   17.2s
+  b93c68bc0f24 seed 1: RMSE  51.22  MAE  37.60  sMAPE  58.9  P   8677   17.2s
+  b982bd0d3480 seed 1: RMSE  44.38  MAE  31.14  sMAPE  41.7  P   8677   17.2s
+  4729dd58aa08 seed 2: RMSE  46.98  MAE  35.73  sMAPE  55.5  P   8677   17.2s
+  26d7561298ac seed 2: RMSE  45.93  MAE  31.23  sMAPE  41.2  P   8677   17.2s
+  2dceafbb215e seed 3: RMSE  52.22  MAE  39.38  sMAPE  60.3  P   8677   17.2s
+  139f6827c1db seed 3: RMSE  47.10  MAE  31.96  sMAPE  41.5  P   8677   17.2s
+  039defcbec63 seed 4: RMSE  49.08  MAE  36.43  sMAPE  58.4  P   8677   17.2s
+  e2508c00419f seed 4: RMSE  48.16  MAE  32.29  sMAPE  41.8  P   8677   17.2s
+         option  seeds     P  epochs  rmse_mean  rmse_std  mae_mean  mae_std  smape_mean  smape_std  rmse_half1  rmse_half2  mean_error
+           none      5 13514       8      84.85      0.06     60.65     0.08       73.86       0.05       52.48      107.91       -9.36
+           past      5 17866       8      85.70      0.53     60.56     0.17       73.57       0.28       52.37      109.29       -9.96
+    past+future      5 17866       8      45.94      1.32     32.87     0.88       44.01       0.40       37.72       52.89        9.77
+     flags only      5 14026       8      66.46      1.35     46.64     0.77       57.11       0.54       46.19       81.84        3.32
+continuous only      5 17354       8      44.82      1.32     32.46     0.85       44.99       1.05       38.26       50.53        7.25
+{
+ "final_config": {
+  "seq_len": 96,
+  "d": 16,
+  "kernel": 25,
+  "factor": 1,
+  "dropout": 0.1,
+  "trend_start": "anchor",
+  "target": "raw+log",
+  "external": "past+future",
+  "variables": "all+roll6+roll24+diff6+diff24",
+  "daily": true,
+  "window_norm": false,
+  "epochs": 4,
+  "batch": 64,
+  "lr": 0.003,
+  "marks_net": "mlp",
+  "marks_hidden": 2
+ },
+ "P": 17866,
+ "E": 8,
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "single_model": {
+  "rmse": [
+   45.94166801318845,
+   1.3197182329367685
+  ],
+  "mae": [
+   32.86635583675813,
+   0.8783953909803481
+  ],
+  "smape": [
+   44.01333052619361,
+   0.3999332721081357
+  ]
+ },
+ "average_of_seeds": {
+  "rmse": 43.917336205511795,
+  "mae": 31.554961630182362,
+  "smape": 42.35010444101154,
+  "rmse_half1": 36.17886402944918,
+  "rmse_half2": 50.48321143028188,
+  "mean_error": 9.773084108648634
+ },
+ "block_rmse_average": {
+  "mean": 42.08038336180198,
+  "std": 12.568761096931425,
+  "min": 17.610980490091624,
+  "max": 85.31786653941053,
+  "share_within_10_of_mean": 0.6079545454545454
+ }
+}
+
+The studies end at the selected model written in SELECTED: True
+study exit=0

@@ -1,0 +1,9 @@
+\begin{tabular}{lrrrllll}
+\toprule
+option & seeds & P & epochs & RMSE & MAE & sMAPE & chosen \\
+\midrule
+one linear layer (as now) & 5 & 11850 & 6 & 56.70 $\pm$ 0.47 & 40.50 $\pm$ 0.83 & 52.50 $\pm$ 1.35 &  \\
+two-layer network & 5 & 12938 & 6 & 50.76 $\pm$ 1.78 & 35.55 $\pm$ 0.94 & 46.59 $\pm$ 0.74 & yes \\
+linear layer + means and changes over 6 and 24 steps & 5 & 13386 & 6 & 53.65 $\pm$ 0.32 & 37.00 $\pm$ 0.63 & 48.55 $\pm$ 0.92 &  \\
+\bottomrule
+\end{tabular}

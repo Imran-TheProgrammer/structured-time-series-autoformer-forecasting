@@ -1,0 +1,4 @@
+option,seeds,P,epochs,rmse_mean,rmse_std,mae_mean,mae_std,smape_mean,smape_std,rmse_half1,rmse_half2,mean_error,chosen
+learning rate 0.001,5,17866,8,47.17195,0.55629,33.49929,0.53072,44.11883,0.81486,37.69857,55.03595,7.07362,False
+learning rate 0.003,5,17866,8,45.94167,1.31972,32.86636,0.8784,44.01333,0.39993,37.72203,52.89143,9.77308,True
+learning rate 0.006,5,17866,8,48.77882,1.88362,34.7935,0.66421,45.66535,0.9362,40.12528,56.07601,12.3062,False

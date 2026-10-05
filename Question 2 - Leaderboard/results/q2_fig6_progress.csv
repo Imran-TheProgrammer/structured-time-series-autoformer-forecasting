@@ -1,0 +1,6 @@
+forecast,validation_rmse
+Always the training mean,88.73699138373823
+Linear fit on the optional file,72.10675665491266
+Autoformer after the first studies (A to I),55.90238851709752
+"+ two-layer feature network, raw and log targets (S1 to S3)",48.964177534172606
++ means and changes over 6 and 24 steps (S4 to S6): submitted,43.9173362055118

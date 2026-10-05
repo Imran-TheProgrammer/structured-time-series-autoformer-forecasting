@@ -1,0 +1,3 @@
+option,forecasts_scored,P,E,rmse_mean,mae_mean,smape_mean,rmse_std,mae_std,smape_std,rmse_half1,rmse_half2,mean_error
+average of five units,252,89330,40,44.368,31.654,42.069,0.506,0.363,0.48,36.225,51.233,9.164
+average of ten units,1,178660,80,44.113,31.485,41.853,,,,36.025,50.933,9.164

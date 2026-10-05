@@ -1,0 +1,2014 @@
+{
+ "final_config": {
+  "seq_len": 96,
+  "d": 16,
+  "kernel": 25,
+  "factor": 1,
+  "dropout": 0.1,
+  "trend_start": "anchor",
+  "target": "raw+log",
+  "external": "past+future",
+  "variables": "all+roll6+roll24+diff6+diff24",
+  "daily": true,
+  "window_norm": false,
+  "epochs": 4,
+  "batch": 64,
+  "lr": 0.003,
+  "marks_net": "mlp",
+  "marks_hidden": 2
+ },
+ "final_units": [
+  [
+   "a04455734fb3",
+   "af063cbe61b4"
+  ],
+  [
+   "bc90ac994065",
+   "9829c7200d1f"
+  ],
+  [
+   "ef45a492960e",
+   "e4c7a527a9cf"
+  ],
+  [
+   "0d5a9da52fed",
+   "4f2fda1cbdea"
+  ],
+  [
+   "3f1d2cb1949d",
+   "b356ac46c179"
+  ]
+ ],
+ "start_config": {
+  "seq_len": 96,
+  "d": 16,
+  "kernel": 25,
+  "factor": 1,
+  "dropout": 0.1,
+  "trend_start": "anchor",
+  "target": "log",
+  "external": "past+future",
+  "variables": "all",
+  "daily": true,
+  "window_norm": false,
+  "epochs": 3,
+  "batch": 64,
+  "lr": 0.003
+ },
+ "studies": [
+  {
+   "study": "A",
+   "setting": "trend_start",
+   "question": "Starting trend: window mean (paper), fading level, or fading gap to the last value",
+   "chosen": "anchor",
+   "options": [
+    "mean",
+    "fade",
+    "anchor"
+   ],
+   "costs": [
+    0,
+    1,
+    1
+   ],
+   "keys": {
+    "mean": [
+     "909804b38935",
+     "afe1f17886ca",
+     "228a1b5e7f60",
+     "e573915a804f",
+     "b0e402f2528c"
+    ],
+    "fade": [
+     "baf56594a781",
+     "e671b4f06159",
+     "a747ef2ec4af",
+     "af0da77d04a8",
+     "c53975ca93a3"
+    ],
+    "anchor": [
+     "4817abe6c665",
+     "fc0b6ba10add",
+     "a7aca2df312f",
+     "eff7c0093195",
+     "489a23fc19cc"
+    ]
+   }
+  },
+  {
+   "study": "B",
+   "setting": "target",
+   "question": "Target scale: raw or log1p",
+   "chosen": "log",
+   "options": [
+    "raw",
+    "log"
+   ],
+   "costs": [
+    0,
+    0
+   ],
+   "keys": {
+    "raw": [
+     "4817abe6c665",
+     "fc0b6ba10add",
+     "a7aca2df312f"
+    ],
+    "log": [
+     "d412d8012fc9",
+     "497b87b9e599",
+     "ef30aaeb0d33"
+    ]
+   }
+  },
+  {
+   "study": "C",
+   "setting": "seq_len",
+   "question": "History length",
+   "chosen": "96",
+   "options": [
+    "96",
+    "168",
+    "336"
+   ],
+   "costs": [
+    0,
+    1,
+    2
+   ],
+   "keys": {
+    "96": [
+     "24d504e1046b",
+     "02da9b491f67",
+     "f398e1abe356"
+    ],
+    "168": [
+     "d412d8012fc9",
+     "497b87b9e599",
+     "ef30aaeb0d33"
+    ],
+    "336": [
+     "3b01cf452a0b",
+     "0d16c19fa20b",
+     "53a88b96a8b5"
+    ]
+   }
+  },
+  {
+   "study": "D",
+   "setting": "d",
+   "question": "Model width (sets the parameter count P)",
+   "chosen": "16",
+   "options": [
+    "8",
+    "16",
+    "32",
+    "64"
+   ],
+   "costs": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "keys": {
+    "8": [
+     "ed98c1094fc2",
+     "c67a227a2dd1",
+     "362f8ccdf58b"
+    ],
+    "16": [
+     "e141c42226c5",
+     "f53241c86764",
+     "c8f4047298e6"
+    ],
+    "32": [
+     "24d504e1046b",
+     "02da9b491f67",
+     "f398e1abe356"
+    ],
+    "64": [
+     "6ec6909f8725",
+     "bb227684aa40",
+     "0a92f269a42b"
+    ]
+   }
+  },
+  {
+   "study": "E",
+   "setting": "epochs",
+   "question": "Training epochs (sets E)",
+   "chosen": "3",
+   "options": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "6"
+   ],
+   "costs": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "keys": {
+    "1": [
+     "e3e624644bb7",
+     "3fbded204369",
+     "6eb8255bf502"
+    ],
+    "2": [
+     "a9009df33905",
+     "b62d898d43e4",
+     "5de87b94363e"
+    ],
+    "3": [
+     "e141c42226c5",
+     "f53241c86764",
+     "c8f4047298e6"
+    ],
+    "4": [
+     "76fa15e86d2c",
+     "95e039f80ba4",
+     "dc9ea8ecd274"
+    ],
+    "6": [
+     "254f5c0ff234",
+     "02bfa3d58410",
+     "3291f8280be9"
+    ]
+   }
+  },
+  {
+   "study": "G1",
+   "setting": "factor",
+   "question": "Number of delays, k = floor(c ln L)",
+   "chosen": "1",
+   "options": [
+    "1",
+    "2",
+    "3"
+   ],
+   "costs": [
+    0,
+    1,
+    2
+   ],
+   "keys": {
+    "1": [
+     "e141c42226c5",
+     "f53241c86764",
+     "c8f4047298e6"
+    ],
+    "2": [
+     "cd3f31d57f5d",
+     "7a8bdd8f4733",
+     "f4db95bd160a"
+    ],
+    "3": [
+     "cf40c1976b25",
+     "0852e0db07a1",
+     "f9bebd8adb45"
+    ]
+   }
+  },
+  {
+   "study": "G2",
+   "setting": "window_norm",
+   "question": "Window-relative normalisation",
+   "chosen": "False",
+   "options": [
+    "False",
+    "True"
+   ],
+   "costs": [
+    0,
+    1
+   ],
+   "keys": {
+    "False": [
+     "e141c42226c5",
+     "f53241c86764",
+     "c8f4047298e6"
+    ],
+    "True": [
+     "fe97641c5e61",
+     "c4a19aa750c8",
+     "3de18f91c605"
+    ]
+   }
+  },
+  {
+   "study": "G3",
+   "setting": "daily",
+   "question": "Daily sin/cos position features",
+   "chosen": "True",
+   "options": [
+    "False",
+    "True"
+   ],
+   "costs": [
+    0,
+    1
+   ],
+   "keys": {
+    "False": [
+     "9c4d1307cda0",
+     "0b1d7abd4821",
+     "f2d03de65e92"
+    ],
+    "True": [
+     "e141c42226c5",
+     "f53241c86764",
+     "c8f4047298e6"
+    ]
+   }
+  },
+  {
+   "study": "F1",
+   "setting": "external",
+   "question": "Optional file: none, past only, past + future",
+   "chosen": "past+future",
+   "options": [
+    "none",
+    "past",
+    "past+future"
+   ],
+   "costs": [
+    0,
+    1,
+    1
+   ],
+   "keys": {
+    "none": [
+     "249aee2bf7c1",
+     "a9403fb49504",
+     "4d1ed1fa017b",
+     "4b8df95da609",
+     "0b391d251f5e"
+    ],
+    "past": [
+     "a1564dd8732f",
+     "1e34942976eb",
+     "03d3410ab031",
+     "432d2ae891e3",
+     "1fed1be50e1c"
+    ],
+    "past+future": [
+     "e141c42226c5",
+     "f53241c86764",
+     "c8f4047298e6",
+     "bfb711010506",
+     "acd765a8bea3"
+    ]
+   }
+  },
+  {
+   "study": "F2",
+   "setting": "variables",
+   "question": "Optional file: which variables",
+   "chosen": "all",
+   "options": [
+    "flags",
+    "continuous",
+    "all"
+   ],
+   "costs": [
+    0,
+    1,
+    2
+   ],
+   "keys": {
+    "flags": [
+     "b9c05060189a",
+     "1ff28753f34a",
+     "4b5b269c0751"
+    ],
+    "continuous": [
+     "1cd7c7041a9b",
+     "d4a02661c810",
+     "2a4f97b5c30f"
+    ],
+    "all": [
+     "e141c42226c5",
+     "f53241c86764",
+     "c8f4047298e6"
+    ]
+   }
+  },
+  {
+   "study": "B2",
+   "setting": "target",
+   "question": "Target scale again, now at the final settings",
+   "chosen": "log",
+   "options": [
+    "raw",
+    "log"
+   ],
+   "costs": [
+    0,
+    0
+   ],
+   "keys": {
+    "raw": [
+     "48bb0dc43ea4",
+     "010a5d470feb",
+     "4a1d9ec92d91",
+     "cc611d33173d",
+     "f9cd3d5bde69"
+    ],
+    "log": [
+     "e141c42226c5",
+     "f53241c86764",
+     "c8f4047298e6",
+     "bfb711010506",
+     "acd765a8bea3"
+    ]
+   }
+  },
+  {
+   "study": "I",
+   "setting": "variables",
+   "question": "Extra features from the optional file: 24-step mean and 24-step change",
+   "chosen": "all",
+   "options": [
+    "all",
+    "all+roll",
+    "all+diff",
+    "all+roll+diff"
+   ],
+   "costs": [
+    0,
+    1,
+    1,
+    2
+   ],
+   "keys": {
+    "all": [
+     "e141c42226c5",
+     "f53241c86764",
+     "c8f4047298e6"
+    ],
+    "all+roll": [
+     "227a97dd35c1",
+     "385cf1c7f96d",
+     "5299bb43e431"
+    ],
+    "all+diff": [
+     "b17316d6c686",
+     "3aca8e9dbc15",
+     "921f3fe3372a"
+    ],
+    "all+roll+diff": [
+     "b0b74f7ca034",
+     "0fa43bd510cc",
+     "6bf16ea62719"
+    ]
+   }
+  }
+ ],
+ "checks": [
+  {
+   "study": "A2",
+   "setting": "trend_start",
+   "keys": {
+    "mean": [
+     "c58afd6f77a0",
+     "bea70ced1327",
+     "0df704ecc849",
+     "799301d38572",
+     "a74a8941aa9d"
+    ],
+    "fade": [
+     "0579d1b424fd",
+     "7778eee9251f",
+     "6da16789423b",
+     "10684cd3cc50",
+     "f6ed37e29fd6"
+    ],
+    "anchor": [
+     "9f2875d729db",
+     "7b23d40f7070",
+     "8064a8b6efc0",
+     "1a5947c6d042",
+     "21db5ba9a50c"
+    ]
+   },
+   "question": "Starting trend, same settings as Study A but dropout 0"
+  },
+  {
+   "study": "H",
+   "setting": "dropout",
+   "keys": {
+    "0.0": [
+     "f6bb15ecc6c6",
+     "fb9bf141aa8a",
+     "7ef0fb92dcfb",
+     "4759719ead1d",
+     "aa18b3f2792b"
+    ],
+    "0.1": [
+     "e141c42226c5",
+     "f53241c86764",
+     "c8f4047298e6",
+     "bfb711010506",
+     "acd765a8bea3"
+    ]
+   },
+   "question": "Final configuration with dropout 0 and with dropout 0.1"
+  }
+ ],
+ "later": [
+  {
+   "study": "S1",
+   "question": "Width and epochs together",
+   "chosen": "width 16, 3 epochs",
+   "tied_with_chosen": [
+    "width 32, 3 epochs"
+   ],
+   "options": [
+    "width 16, 3 epochs",
+    "width 16, 10 epochs",
+    "width 16, 20 epochs",
+    "width 32, 3 epochs",
+    "width 32, 10 epochs",
+    "width 32, 20 epochs",
+    "width 64, 3 epochs",
+    "width 64, 10 epochs",
+    "width 64, 20 epochs"
+   ],
+   "changes": {
+    "width 16, 3 epochs": {
+     "d": 16,
+     "epochs": 3
+    },
+    "width 16, 10 epochs": {
+     "d": 16,
+     "epochs": 10
+    },
+    "width 16, 20 epochs": {
+     "d": 16,
+     "epochs": 20
+    },
+    "width 32, 3 epochs": {
+     "d": 32,
+     "epochs": 3
+    },
+    "width 32, 10 epochs": {
+     "d": 32,
+     "epochs": 10
+    },
+    "width 32, 20 epochs": {
+     "d": 32,
+     "epochs": 20
+    },
+    "width 64, 3 epochs": {
+     "d": 64,
+     "epochs": 3
+    },
+    "width 64, 10 epochs": {
+     "d": 64,
+     "epochs": 10
+    },
+    "width 64, 20 epochs": {
+     "d": 64,
+     "epochs": 20
+    }
+   },
+   "keys": {
+    "width 16, 3 epochs": [
+     [
+      "e141c42226c5"
+     ],
+     [
+      "f53241c86764"
+     ],
+     [
+      "c8f4047298e6"
+     ]
+    ],
+    "width 16, 10 epochs": [
+     [
+      "9240cec68a7d"
+     ],
+     [
+      "18b48aa5d249"
+     ],
+     [
+      "c27203a98f30"
+     ]
+    ],
+    "width 16, 20 epochs": [
+     [
+      "70671c87e1c8"
+     ],
+     [
+      "b16f19454f25"
+     ],
+     [
+      "2f563ce48770"
+     ]
+    ],
+    "width 32, 3 epochs": [
+     [
+      "24d504e1046b"
+     ],
+     [
+      "02da9b491f67"
+     ],
+     [
+      "f398e1abe356"
+     ]
+    ],
+    "width 32, 10 epochs": [
+     [
+      "1203e4e6d970"
+     ],
+     [
+      "b8b52ccce573"
+     ],
+     [
+      "d4f03b72a9f3"
+     ]
+    ],
+    "width 32, 20 epochs": [
+     [
+      "db765a012cb6"
+     ],
+     [
+      "4036fee46155"
+     ],
+     [
+      "309573f5270c"
+     ]
+    ],
+    "width 64, 3 epochs": [
+     [
+      "6ec6909f8725"
+     ],
+     [
+      "bb227684aa40"
+     ],
+     [
+      "0a92f269a42b"
+     ]
+    ],
+    "width 64, 10 epochs": [
+     [
+      "ba96c0bfbeab"
+     ],
+     [
+      "e95021da367c"
+     ],
+     [
+      "9e4085fe718b"
+     ]
+    ],
+    "width 64, 20 epochs": [
+     [
+      "6b7a56c6ff86"
+     ],
+     [
+      "870dffb966d1"
+     ],
+     [
+      "f1a0aa03781b"
+     ]
+    ]
+   }
+  },
+  {
+   "study": "S1b",
+   "question": "Encoder layers, at the pair S1 picks",
+   "chosen": "1 encoder layer",
+   "tied_with_chosen": [],
+   "options": [
+    "1 encoder layer",
+    "2 encoder layers"
+   ],
+   "changes": {
+    "1 encoder layer": {
+     "e_layers": 1
+    },
+    "2 encoder layers": {
+     "e_layers": 2
+    }
+   },
+   "keys": {
+    "1 encoder layer": [
+     [
+      "e141c42226c5"
+     ],
+     [
+      "f53241c86764"
+     ],
+     [
+      "c8f4047298e6"
+     ]
+    ],
+    "2 encoder layers": [
+     [
+      "ed01b32727b6"
+     ],
+     [
+      "9f79bdb735eb"
+     ],
+     [
+      "cb693efde12e"
+     ]
+    ]
+   }
+  },
+  {
+   "study": "S2",
+   "question": "Target scale, at the configuration S1 picks",
+   "chosen": "average of raw and log",
+   "tied_with_chosen": [],
+   "options": [
+    "raw",
+    "log",
+    "average of raw and log"
+   ],
+   "changes": {
+    "raw": {
+     "target": "raw"
+    },
+    "log": {
+     "target": "log"
+    },
+    "average of raw and log": {
+     "target": "raw+log"
+    }
+   },
+   "keys": {
+    "raw": [
+     [
+      "48bb0dc43ea4"
+     ],
+     [
+      "010a5d470feb"
+     ],
+     [
+      "4a1d9ec92d91"
+     ],
+     [
+      "cc611d33173d"
+     ],
+     [
+      "f9cd3d5bde69"
+     ]
+    ],
+    "log": [
+     [
+      "e141c42226c5"
+     ],
+     [
+      "f53241c86764"
+     ],
+     [
+      "c8f4047298e6"
+     ],
+     [
+      "bfb711010506"
+     ],
+     [
+      "acd765a8bea3"
+     ]
+    ],
+    "average of raw and log": [
+     [
+      "48bb0dc43ea4",
+      "e141c42226c5"
+     ],
+     [
+      "010a5d470feb",
+      "f53241c86764"
+     ],
+     [
+      "4a1d9ec92d91",
+      "c8f4047298e6"
+     ],
+     [
+      "cc611d33173d",
+      "bfb711010506"
+     ],
+     [
+      "f9cd3d5bde69",
+      "acd765a8bea3"
+     ]
+    ]
+   }
+  },
+  {
+   "study": "S3",
+   "question": "How the optional variables enter, at the configuration S2 picks",
+   "chosen": "two-layer network",
+   "tied_with_chosen": [],
+   "options": [
+    "one linear layer (as now)",
+    "two-layer network",
+    "linear layer + means and changes over 6 and 24 steps"
+   ],
+   "changes": {
+    "one linear layer (as now)": {
+     "marks_net": "linear"
+    },
+    "two-layer network": {
+     "marks_net": "mlp"
+    },
+    "linear layer + means and changes over 6 and 24 steps": {
+     "variables": "all+roll6+roll24+diff6+diff24"
+    }
+   },
+   "keys": {
+    "one linear layer (as now)": [
+     [
+      "48bb0dc43ea4",
+      "e141c42226c5"
+     ],
+     [
+      "010a5d470feb",
+      "f53241c86764"
+     ],
+     [
+      "4a1d9ec92d91",
+      "c8f4047298e6"
+     ],
+     [
+      "cc611d33173d",
+      "bfb711010506"
+     ],
+     [
+      "f9cd3d5bde69",
+      "acd765a8bea3"
+     ]
+    ],
+    "two-layer network": [
+     [
+      "4450f67a7709",
+      "cba69991f2e3"
+     ],
+     [
+      "b4c4aeabe1eb",
+      "77f6da2842dd"
+     ],
+     [
+      "e372dc25461a",
+      "1e3dc03edc67"
+     ],
+     [
+      "73cd0bc81d62",
+      "e3977fca50c5"
+     ],
+     [
+      "6a0cda0ef69f",
+      "18fc27a33eb8"
+     ]
+    ],
+    "linear layer + means and changes over 6 and 24 steps": [
+     [
+      "5458ef895ff9",
+      "ea83245f8960"
+     ],
+     [
+      "774ec3714503",
+      "cc8ec6438905"
+     ],
+     [
+      "d8621c10c307",
+      "479fe669792f"
+     ],
+     [
+      "aaf3999c1715",
+      "8feb204537fd"
+     ],
+     [
+      "3c3402e36929",
+      "61d2b54e9b4d"
+     ]
+    ]
+   }
+  },
+  {
+   "study": "S4",
+   "question": "Two-layer network with and without the means and changes over 6 and 24 steps",
+   "chosen": "two-layer network + means and changes",
+   "tied_with_chosen": [],
+   "options": [
+    "two-layer network (as now)",
+    "two-layer network + means and changes"
+   ],
+   "changes": {
+    "two-layer network (as now)": {
+     "variables": "all"
+    },
+    "two-layer network + means and changes": {
+     "variables": "all+roll6+roll24+diff6+diff24"
+    }
+   },
+   "keys": {
+    "two-layer network (as now)": [
+     [
+      "4450f67a7709",
+      "cba69991f2e3"
+     ],
+     [
+      "b4c4aeabe1eb",
+      "77f6da2842dd"
+     ],
+     [
+      "e372dc25461a",
+      "1e3dc03edc67"
+     ],
+     [
+      "73cd0bc81d62",
+      "e3977fca50c5"
+     ],
+     [
+      "6a0cda0ef69f",
+      "18fc27a33eb8"
+     ]
+    ],
+    "two-layer network + means and changes": [
+     [
+      "bd411f95e876",
+      "29af9b8d1da7"
+     ],
+     [
+      "fff15fca5a3a",
+      "f780406dd231"
+     ],
+     [
+      "8e68554eae9b",
+      "f686f91f9acb"
+     ],
+     [
+      "1ccdb7cebefd",
+      "db73bc6a1804"
+     ],
+     [
+      "03922e907630",
+      "6d90f79f6363"
+     ]
+    ]
+   }
+  },
+  {
+   "study": "S5",
+   "question": "Hidden width of that network, at the configuration S4 picks",
+   "chosen": "twice the model width",
+   "tied_with_chosen": [
+    "model width (as now)",
+    "four times the model width"
+   ],
+   "options": [
+    "model width (as now)",
+    "twice the model width",
+    "four times the model width"
+   ],
+   "changes": {
+    "model width (as now)": {
+     "marks_hidden": 1
+    },
+    "twice the model width": {
+     "marks_hidden": 2
+    },
+    "four times the model width": {
+     "marks_hidden": 4
+    }
+   },
+   "keys": {
+    "model width (as now)": [
+     [
+      "bd411f95e876",
+      "29af9b8d1da7"
+     ],
+     [
+      "fff15fca5a3a",
+      "f780406dd231"
+     ],
+     [
+      "8e68554eae9b",
+      "f686f91f9acb"
+     ],
+     [
+      "1ccdb7cebefd",
+      "db73bc6a1804"
+     ],
+     [
+      "03922e907630",
+      "6d90f79f6363"
+     ]
+    ],
+    "twice the model width": [
+     [
+      "121690d9c8e1",
+      "0a486fc58908"
+     ],
+     [
+      "dfbc35bc1990",
+      "5979a23545a7"
+     ],
+     [
+      "bc8c8930cc43",
+      "b91887f0d0fb"
+     ],
+     [
+      "577ea56c03c4",
+      "8c4bbdd8cc69"
+     ],
+     [
+      "d168f40b7536",
+      "0bbeefb76830"
+     ]
+    ],
+    "four times the model width": [
+     [
+      "363f8137c6c7",
+      "2a8872b0da2b"
+     ],
+     [
+      "77134f65fb60",
+      "4ecc7059c170"
+     ],
+     [
+      "42b104eb0d50",
+      "1330d187b18a"
+     ],
+     [
+      "71d05e4b2cfb",
+      "1b20d4e9202c"
+     ],
+     [
+      "59017c5bfc11",
+      "b26cc3e4a5ee"
+     ]
+    ]
+   }
+  },
+  {
+   "study": "S5b",
+   "question": "Two against three layers in that network, at the width S5 picks",
+   "chosen": "2 layers",
+   "tied_with_chosen": [],
+   "options": [
+    "2 layers",
+    "3 layers"
+   ],
+   "changes": {
+    "2 layers": {
+     "marks_layers": 2
+    },
+    "3 layers": {
+     "marks_layers": 3
+    }
+   },
+   "keys": {
+    "2 layers": [
+     [
+      "121690d9c8e1",
+      "0a486fc58908"
+     ],
+     [
+      "dfbc35bc1990",
+      "5979a23545a7"
+     ],
+     [
+      "bc8c8930cc43",
+      "b91887f0d0fb"
+     ],
+     [
+      "577ea56c03c4",
+      "8c4bbdd8cc69"
+     ],
+     [
+      "d168f40b7536",
+      "0bbeefb76830"
+     ]
+    ],
+    "3 layers": [
+     [
+      "9043e25a61f4",
+      "5713cc03e7b0"
+     ],
+     [
+      "f6aebc2a7a46",
+      "7cde51e210c9"
+     ],
+     [
+      "506b138bd1e8",
+      "5d35546bda2f"
+     ],
+     [
+      "6c87ff0f2220",
+      "5ea8ad506ba8"
+     ],
+     [
+      "7479b204e3b5",
+      "41655a6536e6"
+     ]
+    ]
+   }
+  },
+  {
+   "study": "S6",
+   "question": "Epochs again, at the configuration S5 picks",
+   "chosen": "4 epochs",
+   "tied_with_chosen": [
+    "2 epochs",
+    "3 epochs"
+   ],
+   "options": [
+    "2 epochs",
+    "3 epochs",
+    "4 epochs",
+    "6 epochs"
+   ],
+   "changes": {
+    "2 epochs": {
+     "epochs": 2
+    },
+    "3 epochs": {
+     "epochs": 3
+    },
+    "4 epochs": {
+     "epochs": 4
+    },
+    "6 epochs": {
+     "epochs": 6
+    }
+   },
+   "keys": {
+    "2 epochs": [
+     [
+      "b4155cb5ab89",
+      "cb1d602272f8"
+     ],
+     [
+      "51244281cff5",
+      "7ec115ae5af6"
+     ],
+     [
+      "8dd951e80539",
+      "eef0685ce547"
+     ],
+     [
+      "c558fc027c8c",
+      "b56852e15c27"
+     ],
+     [
+      "4ef6530c28a3",
+      "397ee0270553"
+     ]
+    ],
+    "3 epochs": [
+     [
+      "121690d9c8e1",
+      "0a486fc58908"
+     ],
+     [
+      "dfbc35bc1990",
+      "5979a23545a7"
+     ],
+     [
+      "bc8c8930cc43",
+      "b91887f0d0fb"
+     ],
+     [
+      "577ea56c03c4",
+      "8c4bbdd8cc69"
+     ],
+     [
+      "d168f40b7536",
+      "0bbeefb76830"
+     ]
+    ],
+    "4 epochs": [
+     [
+      "a04455734fb3",
+      "af063cbe61b4"
+     ],
+     [
+      "bc90ac994065",
+      "9829c7200d1f"
+     ],
+     [
+      "ef45a492960e",
+      "e4c7a527a9cf"
+     ],
+     [
+      "0d5a9da52fed",
+      "4f2fda1cbdea"
+     ],
+     [
+      "3f1d2cb1949d",
+      "b356ac46c179"
+     ]
+    ],
+    "6 epochs": [
+     [
+      "caef92a6b159",
+      "7f4cc57c4f20"
+     ],
+     [
+      "71817a4d7891",
+      "52669ede0e37"
+     ],
+     [
+      "c2e72b3ea1f1",
+      "523e6027a451"
+     ],
+     [
+      "62a5a9573cf7",
+      "41ca9e8edad1"
+     ],
+     [
+      "b06d39f22e19",
+      "ce75902a95c1"
+     ]
+    ]
+   }
+  },
+  {
+   "study": "S7",
+   "question": "More features from the optional file",
+   "chosen": "(a) means and changes over 6 and 24 steps (as now)",
+   "tied_with_chosen": [
+    "(c) as (a), plus 48 steps",
+    "(d) as (a), plus spread, minimum, maximum over 24 steps"
+   ],
+   "options": [
+    "(a) means and changes over 6 and 24 steps (as now)",
+    "(b) as (a), plus 3 and 12 steps",
+    "(c) as (a), plus 48 steps",
+    "(d) as (a), plus spread, minimum, maximum over 24 steps"
+   ],
+   "changes": {
+    "(a) means and changes over 6 and 24 steps (as now)": {
+     "variables": "all+roll6+roll24+diff6+diff24"
+    },
+    "(b) as (a), plus 3 and 12 steps": {
+     "variables": "all+roll6+roll24+diff6+diff24+roll3+roll12+diff3+diff12"
+    },
+    "(c) as (a), plus 48 steps": {
+     "variables": "all+roll6+roll24+diff6+diff24+roll48+diff48"
+    },
+    "(d) as (a), plus spread, minimum, maximum over 24 steps": {
+     "variables": "all+roll6+roll24+diff6+diff24+std24+min24+max24"
+    }
+   },
+   "keys": {
+    "(a) means and changes over 6 and 24 steps (as now)": [
+     [
+      "a04455734fb3",
+      "af063cbe61b4"
+     ],
+     [
+      "bc90ac994065",
+      "9829c7200d1f"
+     ],
+     [
+      "ef45a492960e",
+      "e4c7a527a9cf"
+     ],
+     [
+      "0d5a9da52fed",
+      "4f2fda1cbdea"
+     ],
+     [
+      "3f1d2cb1949d",
+      "b356ac46c179"
+     ]
+    ],
+    "(b) as (a), plus 3 and 12 steps": [
+     [
+      "299de99577f3",
+      "a9e467704d27"
+     ],
+     [
+      "52a960f717db",
+      "ef761fc9a4db"
+     ],
+     [
+      "872ea611ffc1",
+      "1d19d55b86c8"
+     ],
+     [
+      "e2558862cd1f",
+      "2f49ab0264ec"
+     ],
+     [
+      "0bc6a912b58f",
+      "c99aa31d9db6"
+     ]
+    ],
+    "(c) as (a), plus 48 steps": [
+     [
+      "4460d343b4cb",
+      "d1cd9f4ad63a"
+     ],
+     [
+      "07d7b79c63cd",
+      "5adfccd958c1"
+     ],
+     [
+      "ef5d52e3ba49",
+      "17772258f799"
+     ],
+     [
+      "d3a310789f6c",
+      "502b7b9c4858"
+     ],
+     [
+      "af96ab42c17d",
+      "2f33159f619c"
+     ]
+    ],
+    "(d) as (a), plus spread, minimum, maximum over 24 steps": [
+     [
+      "01d5d30d749f",
+      "3a615bf5d02c"
+     ],
+     [
+      "d3e2db39fbf5",
+      "057761358d37"
+     ],
+     [
+      "28b1ba5da796",
+      "08a30b664023"
+     ],
+     [
+      "4cb4f61436ae",
+      "a3176d9cb27c"
+     ],
+     [
+      "f1e6609c0afc",
+      "137adbea2df8"
+     ]
+    ]
+   }
+  },
+  {
+   "study": "S8a",
+   "question": "Learning rate, at the configuration S7 picks",
+   "chosen": "learning rate 0.003",
+   "tied_with_chosen": [
+    "learning rate 0.001"
+   ],
+   "options": [
+    "learning rate 0.001",
+    "learning rate 0.003",
+    "learning rate 0.006"
+   ],
+   "changes": {
+    "learning rate 0.001": {
+     "lr": 0.001
+    },
+    "learning rate 0.003": {
+     "lr": 0.003
+    },
+    "learning rate 0.006": {
+     "lr": 0.006
+    }
+   },
+   "keys": {
+    "learning rate 0.001": [
+     [
+      "9dbe79537549",
+      "a9a2c94c224c"
+     ],
+     [
+      "77e641fb92d6",
+      "3b5284fa9d42"
+     ],
+     [
+      "1a9744502f01",
+      "daf4e48ce64a"
+     ],
+     [
+      "730bb7f5bc01",
+      "188491ca43e2"
+     ],
+     [
+      "48e3cbc4cc4e",
+      "27e3d22b88c5"
+     ]
+    ],
+    "learning rate 0.003": [
+     [
+      "a04455734fb3",
+      "af063cbe61b4"
+     ],
+     [
+      "bc90ac994065",
+      "9829c7200d1f"
+     ],
+     [
+      "ef45a492960e",
+      "e4c7a527a9cf"
+     ],
+     [
+      "0d5a9da52fed",
+      "4f2fda1cbdea"
+     ],
+     [
+      "3f1d2cb1949d",
+      "b356ac46c179"
+     ]
+    ],
+    "learning rate 0.006": [
+     [
+      "feab7d513a0c",
+      "770632fb8e01"
+     ],
+     [
+      "f8d131cc6798",
+      "0ae5e1ed5497"
+     ],
+     [
+      "75ec26187c74",
+      "5aaa69ee13c1"
+     ],
+     [
+      "d816484ebb2c",
+      "e2902d748c0b"
+     ],
+     [
+      "1463d1b5843d",
+      "41673933a2d8"
+     ]
+    ]
+   }
+  },
+  {
+   "study": "S8b",
+   "question": "Dropout, at the configuration S8a picks",
+   "chosen": "dropout 0.1",
+   "tied_with_chosen": [],
+   "options": [
+    "dropout 0.0",
+    "dropout 0.1",
+    "dropout 0.2"
+   ],
+   "changes": {
+    "dropout 0.0": {
+     "dropout": 0.0
+    },
+    "dropout 0.1": {
+     "dropout": 0.1
+    },
+    "dropout 0.2": {
+     "dropout": 0.2
+    }
+   },
+   "keys": {
+    "dropout 0.0": [
+     [
+      "81e206829e43",
+      "a66734d6d010"
+     ],
+     [
+      "244f8fc049e9",
+      "bed46f967978"
+     ],
+     [
+      "64aa13cee2eb",
+      "8ffa14535ffb"
+     ],
+     [
+      "254289413441",
+      "07462b2329c5"
+     ],
+     [
+      "e104b75c345f",
+      "901425b374d3"
+     ]
+    ],
+    "dropout 0.1": [
+     [
+      "a04455734fb3",
+      "af063cbe61b4"
+     ],
+     [
+      "bc90ac994065",
+      "9829c7200d1f"
+     ],
+     [
+      "ef45a492960e",
+      "e4c7a527a9cf"
+     ],
+     [
+      "0d5a9da52fed",
+      "4f2fda1cbdea"
+     ],
+     [
+      "3f1d2cb1949d",
+      "b356ac46c179"
+     ]
+    ],
+    "dropout 0.2": [
+     [
+      "72e3466e8c6d",
+      "d54b5c0939b8"
+     ],
+     [
+      "28638fedee4c",
+      "3a7905aad326"
+     ],
+     [
+      "020bce60ce13",
+      "9099d743ee63"
+     ],
+     [
+      "b15864fc06b5",
+      "4302f016edd7"
+     ],
+     [
+      "95280d304be0",
+      "97731004a8f5"
+     ]
+    ]
+   }
+  },
+  {
+   "study": "S8c",
+   "question": "Decomposition window, at the configuration S8b picks",
+   "chosen": "window 25",
+   "tied_with_chosen": [
+    "window 13"
+   ],
+   "options": [
+    "window 13",
+    "window 25",
+    "window 49"
+   ],
+   "changes": {
+    "window 13": {
+     "kernel": 13
+    },
+    "window 25": {
+     "kernel": 25
+    },
+    "window 49": {
+     "kernel": 49
+    }
+   },
+   "keys": {
+    "window 13": [
+     [
+      "286a35d51f26",
+      "22eda9174243"
+     ],
+     [
+      "a4ea1f96c6ca",
+      "84c37ba5bf6b"
+     ],
+     [
+      "d8b5e3d2a1b5",
+      "675682236b83"
+     ],
+     [
+      "1042abbf01ee",
+      "19ba13cbc4d7"
+     ],
+     [
+      "fc76ce990243",
+      "fc17e4f38c7e"
+     ]
+    ],
+    "window 25": [
+     [
+      "a04455734fb3",
+      "af063cbe61b4"
+     ],
+     [
+      "bc90ac994065",
+      "9829c7200d1f"
+     ],
+     [
+      "ef45a492960e",
+      "e4c7a527a9cf"
+     ],
+     [
+      "0d5a9da52fed",
+      "4f2fda1cbdea"
+     ],
+     [
+      "3f1d2cb1949d",
+      "b356ac46c179"
+     ]
+    ],
+    "window 49": [
+     [
+      "63f292ad9529",
+      "b011ce0a699c"
+     ],
+     [
+      "059c6bdc6545",
+      "923427c2515e"
+     ],
+     [
+      "aba139347ead",
+      "a2186b86a0b8"
+     ],
+     [
+      "c0332cd7930f",
+      "e2c1814383fc"
+     ],
+     [
+      "83e53c74dfdf",
+      "0b65faa7be2b"
+     ]
+    ]
+   }
+  }
+ ],
+ "acceptance": [
+  {
+   "stage": "S1-S3",
+   "keep": true,
+   "changed": true,
+   "gain": 6.938210982924915,
+   "one_seed_spread": 1.7766178636402912,
+   "no_worse_in_either_half": true,
+   "new_config": {
+    "seq_len": 96,
+    "d": 16,
+    "kernel": 25,
+    "factor": 1,
+    "dropout": 0.1,
+    "trend_start": "anchor",
+    "target": "raw+log",
+    "external": "past+future",
+    "variables": "all",
+    "daily": true,
+    "window_norm": false,
+    "epochs": 3,
+    "batch": 64,
+    "lr": 0.003,
+    "marks_net": "mlp"
+   }
+  },
+  {
+   "stage": "S4-S6",
+   "keep": true,
+   "changed": true,
+   "gain": 5.046841328660811,
+   "one_seed_spread": 1.7766178636402912,
+   "no_worse_in_either_half": true,
+   "new_config": {
+    "seq_len": 96,
+    "d": 16,
+    "kernel": 25,
+    "factor": 1,
+    "dropout": 0.1,
+    "trend_start": "anchor",
+    "target": "raw+log",
+    "external": "past+future",
+    "variables": "all+roll6+roll24+diff6+diff24",
+    "daily": true,
+    "window_norm": false,
+    "epochs": 4,
+    "batch": 64,
+    "lr": 0.003,
+    "marks_net": "mlp",
+    "marks_hidden": 2
+   }
+  },
+  {
+   "stage": "S7-S8",
+   "keep": false,
+   "changed": false,
+   "gain": 0.0,
+   "one_seed_spread": 1.3197182329367685,
+   "no_worse_in_either_half": true,
+   "new_config": {
+    "seq_len": 96,
+    "d": 16,
+    "kernel": 25,
+    "factor": 1,
+    "dropout": 0.1,
+    "trend_start": "anchor",
+    "target": "raw+log",
+    "external": "past+future",
+    "variables": "all+roll6+roll24+diff6+diff24",
+    "daily": true,
+    "window_norm": false,
+    "epochs": 4,
+    "batch": 64,
+    "lr": 0.003,
+    "marks_net": "mlp",
+    "marks_hidden": 2
+   }
+  }
+ ],
+ "deployment": {
+  "train_rows": "to validation",
+  "units": 5,
+  "newest_better_in_both_halves": false,
+  "two_years_best_in_both_halves": false,
+  "walk_forward_units": {
+   "first half of validation, without the 13 weeks before it": [
+    [
+     "b5d1e83b453d",
+     "7ce325f9d028"
+    ],
+    [
+     "bd0b130f2d1d",
+     "3cb1ee79ee18"
+    ],
+    [
+     "427e60be060f",
+     "a6e3f18e16a8"
+    ],
+    [
+     "047415ec76b0",
+     "87f8768c1624"
+    ],
+    [
+     "6be2ba0ecd31",
+     "a86e954558dd"
+    ]
+   ],
+   "first half of validation, with the 13 weeks before it": [
+    [
+     "a04455734fb3",
+     "af063cbe61b4"
+    ],
+    [
+     "bc90ac994065",
+     "9829c7200d1f"
+    ],
+    [
+     "ef45a492960e",
+     "e4c7a527a9cf"
+    ],
+    [
+     "0d5a9da52fed",
+     "4f2fda1cbdea"
+    ],
+    [
+     "3f1d2cb1949d",
+     "b356ac46c179"
+    ]
+   ],
+   "first half of validation, only the two years before it": [
+    [
+     "17b9e9acaba7",
+     "2273cbfbe2b8"
+    ],
+    [
+     "7ba4bfedb85c",
+     "0c00808f254c"
+    ],
+    [
+     "9578ead25cde",
+     "b30948674a78"
+    ],
+    [
+     "a9ffd6e9852d",
+     "8dba8dce31df"
+    ],
+    [
+     "cbf3ce3626e5",
+     "c0b6b851fdbc"
+    ]
+   ],
+   "second half of validation, without the 13 weeks before it": [
+    [
+     "a04455734fb3",
+     "af063cbe61b4"
+    ],
+    [
+     "bc90ac994065",
+     "9829c7200d1f"
+    ],
+    [
+     "ef45a492960e",
+     "e4c7a527a9cf"
+    ],
+    [
+     "0d5a9da52fed",
+     "4f2fda1cbdea"
+    ],
+    [
+     "3f1d2cb1949d",
+     "b356ac46c179"
+    ]
+   ],
+   "second half of validation, with the 13 weeks before it": [
+    [
+     "3af2bde1a2e9",
+     "516e57985294"
+    ],
+    [
+     "3d05dd8d5ef0",
+     "c8e30c4d15ab"
+    ],
+    [
+     "5e0518baeafe",
+     "46094ee7fef7"
+    ],
+    [
+     "3bb3a1d77ce6",
+     "2738a2b1c0fb"
+    ],
+    [
+     "430179248c3e",
+     "ec37ac27167b"
+    ]
+   ],
+   "second half of validation, only the two years before it": [
+    [
+     "d7e28ec3e432",
+     "a7c79d09d3d1"
+    ],
+    [
+     "4dfeccf59c12",
+     "39a89e05d44d"
+    ],
+    [
+     "545edd3f618e",
+     "31dd496fac18"
+    ],
+    [
+     "950f164b91d8",
+     "89cda1899d96"
+    ],
+    [
+     "bf16228260ff",
+     "dc631b52a203"
+    ]
+   ]
+  },
+  "ten_units": [
+   [
+    "a04455734fb3",
+    "af063cbe61b4"
+   ],
+   [
+    "bc90ac994065",
+    "9829c7200d1f"
+   ],
+   [
+    "ef45a492960e",
+    "e4c7a527a9cf"
+   ],
+   [
+    "0d5a9da52fed",
+    "4f2fda1cbdea"
+   ],
+   [
+    "3f1d2cb1949d",
+    "b356ac46c179"
+   ],
+   [
+    "1b833a0c187c",
+    "04aecc1d3f03"
+   ],
+   [
+    "e892f5526491",
+    "372972da70b9"
+   ],
+   [
+    "661d5f9e2542",
+    "d366bc6e8fae"
+   ],
+   [
+    "2ec65e0db3b3",
+    "2f144d158437"
+   ],
+   [
+    "ec9a2c617313",
+    "f46a644cc567"
+   ]
+  ],
+  "ten_units_rmse": 44.11330163807179,
+  "units_0_to_4_rmse": 43.917336205511795,
+  "five_units_rmse_mean": 44.36828881706526,
+  "five_units_rmse_std": 0.506400934382841,
+  "applied": true
+ },
+ "deploy": {
+  "average_seeds": true,
+  "train_rows": "to validation",
+  "units": 5
+ },
+ "ablation": {
+  "study": "ablation",
+  "keys": {
+   "none": [
+    [
+     "35029841f21b",
+     "3cdd7297d0a4"
+    ],
+    [
+     "7629368337d7",
+     "ec214e841eba"
+    ],
+    [
+     "979e7aee4b27",
+     "c3ca97547699"
+    ],
+    [
+     "ae9d3c4e5c38",
+     "110cb969a1a5"
+    ],
+    [
+     "ad40685e7e1b",
+     "1a8ccc4772d8"
+    ]
+   ],
+   "past": [
+    [
+     "d14585b8ae5c",
+     "04aed9bfc9d8"
+    ],
+    [
+     "5e364e38a49b",
+     "f796491335b0"
+    ],
+    [
+     "ab51feaa1c99",
+     "cdc9a2f77191"
+    ],
+    [
+     "24844973880b",
+     "afcda2774f87"
+    ],
+    [
+     "96828e1d5389",
+     "99862f4a96ab"
+    ]
+   ],
+   "past+future": [
+    [
+     "a04455734fb3",
+     "af063cbe61b4"
+    ],
+    [
+     "bc90ac994065",
+     "9829c7200d1f"
+    ],
+    [
+     "ef45a492960e",
+     "e4c7a527a9cf"
+    ],
+    [
+     "0d5a9da52fed",
+     "4f2fda1cbdea"
+    ],
+    [
+     "3f1d2cb1949d",
+     "b356ac46c179"
+    ]
+   ],
+   "flags only": [
+    [
+     "0fb4e641f419",
+     "7bc8ac0e7d73"
+    ],
+    [
+     "53babe2bc8bf",
+     "e551da806b12"
+    ],
+    [
+     "0b3573cfc5ed",
+     "3670539c2e6a"
+    ],
+    [
+     "6e8df35de2c6",
+     "31877fbc1b9c"
+    ],
+    [
+     "0a4bafc045fd",
+     "cd50605d1dcf"
+    ]
+   ],
+   "continuous only": [
+    [
+     "6fc760c07aa6",
+     "9a5153b921ad"
+    ],
+    [
+     "b93c68bc0f24",
+     "b982bd0d3480"
+    ],
+    [
+     "4729dd58aa08",
+     "26d7561298ac"
+    ],
+    [
+     "2dceafbb215e",
+     "139f6827c1db"
+    ],
+    [
+     "039defcbec63",
+     "e2508c00419f"
+    ]
+   ]
+  }
+ }
+}

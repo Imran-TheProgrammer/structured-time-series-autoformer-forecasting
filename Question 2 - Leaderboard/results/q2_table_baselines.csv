@@ -1,0 +1,6 @@
+baseline,rmse,mae,smape
+training mean,88.7,68.5,79.5
+last value,124.1,86.5,88.2
+mean of last 168,96.1,71.8,81.3
+same-time linear fit on optional file (raw target),72.1,53.5,67.5
+same-time linear fit on optional file (log target),73.5,48.6,59.3

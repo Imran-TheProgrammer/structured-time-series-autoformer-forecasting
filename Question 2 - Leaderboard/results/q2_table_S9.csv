@@ -1,0 +1,7 @@
+fold,option,seeds,forecasts,trained_on_time_idx,rmse_mean,mae_mean,smape_mean,rmse_std,mae_std,smape_std,mean_error,rmse_of_seed_average
+first half of validation,without the 13 weeks before it,5,85,1..37104,38.537,29.336,43.925,1.057,0.733,0.976,11.395,36.915
+first half of validation,with the 13 weeks before it,5,85,1..39288,37.689,28.898,43.5,0.881,0.855,0.931,12.003,36.188
+first half of validation,only the two years before it,5,85,21769..39288,38.53,28.296,43.504,0.298,0.281,0.644,-0.051,37.273
+second half of validation,without the 13 weeks before it,5,85,1..39288,53.192,36.849,44.442,1.89,1.214,1.045,7.23,50.785
+second half of validation,with the 13 weeks before it,5,85,1..41472,55.132,37.892,44.589,1.006,0.585,1.146,7.153,52.521
+second half of validation,only the two years before it,5,85,23953..41472,59.957,42.706,50.51,1.483,0.776,0.846,13.195,57.821

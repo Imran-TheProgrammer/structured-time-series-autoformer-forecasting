@@ -1,0 +1,4 @@
+option,seeds,P,epochs,rmse_mean,rmse_std,mae_mean,mae_std,smape_mean,smape_std,rmse_half1,rmse_half2,mean_error,chosen
+model width (as now),5,14474,6,46.68506,0.48709,33.2443,0.29947,44.3106,0.42677,37.57145,54.28653,8.00841,False
+twice the model width,5,17866,6,45.9903,1.15133,32.85702,0.74385,43.85857,0.74097,37.13966,53.37652,9.04912,True
+four times the model width,5,24650,6,46.5274,1.10311,33.03657,0.71315,43.65522,0.76286,38.02496,53.68802,8.36127,False

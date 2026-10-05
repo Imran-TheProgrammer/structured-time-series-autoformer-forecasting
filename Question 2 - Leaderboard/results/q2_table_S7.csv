@@ -1,0 +1,5 @@
+option,seeds,P,epochs,rmse_mean,rmse_std,mae_mean,mae_std,smape_mean,smape_std,rmse_half1,rmse_half2,mean_error,chosen
+(a) means and changes over 6 and 24 steps (as now),5,17866,8,45.94167,1.31972,32.86636,0.8784,44.01333,0.39993,37.72203,52.89143,9.77308,True
+"(b) as (a), plus 3 and 12 steps",5,20938,8,47.37196,0.7857,33.63338,0.73064,44.42849,0.70862,39.27537,54.26234,9.16784,False
+"(c) as (a), plus 48 steps",5,19402,8,46.40394,1.41688,32.92321,0.72222,43.31857,1.07125,38.80018,52.91566,10.72589,False
+"(d) as (a), plus spread, minimum, maximum over 24 steps",5,20170,8,47.00126,1.77877,33.1432,1.26445,43.90721,1.51399,37.50665,54.87205,8.38289,False

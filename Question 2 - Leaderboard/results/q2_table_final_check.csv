@@ -1,0 +1,7 @@
+stage,configuration,seeds,P_total,E_total,single_rmse_mean,single_rmse_std,average_rmse,average_mae,average_smape,average_rmse_half1,average_rmse_half2,average_mean_error,gain,one_seed_spread,kept
+S1-S3,current,5,29625,15,57.561,0.789,55.902,37.322,47.977,39.024,68.755,-1.228,6.938,1.777,True
+S1-S3,new,5,64690,30,50.756,1.777,48.964,34.301,45.105,37.791,58.024,5.713,6.938,1.777,True
+S4-S6,current,5,64690,30,50.756,1.777,48.964,34.301,45.105,37.791,58.024,5.713,5.047,1.777,True
+S4-S6,new,5,89330,40,45.942,1.32,43.917,31.555,42.35,36.179,50.483,9.773,5.047,1.777,True
+S7-S8,current,5,89330,40,45.942,1.32,43.917,31.555,42.35,36.179,50.483,9.773,0.0,1.32,False
+S7-S8,new,5,89330,40,45.942,1.32,43.917,31.555,42.35,36.179,50.483,9.773,0.0,1.32,False

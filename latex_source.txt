@@ -1,0 +1,1117 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\setlist[itemize]{itemsep=2pt, topsep=4pt}
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+
+% Shows a figure exported by the code (Question 1/results/design/ and
+% Question 2 - Leaderboard/results/). If the file has not been uploaded yet,
+% a box with its name is printed instead of an error.
+\newcommand{\outfig}[1]{%
+  \IfFileExists{#1.pdf}{\includegraphics[width=\linewidth]{{#1}.pdf}}%
+  {\fbox{\parbox{0.9\linewidth}{\centering Upload \texttt{\detokenize{#1}.pdf} to this project}}}}
+\newcommand{\pmv}[2]{#1 $\pm$ #2}
+
+\title{AI651 -- Assignment 1 Report}
+\author{YOUR NAME \\ YOUR ROLL NUMBER}
+\date{GitHub repository: \url{https://github.com/YOUR-USERNAME/YOUR-REPO}}
+
+\begin{document}
+\maketitle
+
+\section*{Task 1 --- Forecasting Across Heterogeneous Sensors}
+
+All numbers come from one full-preset run of \texttt{Assignment1.ipynb} (data seed 0, model seed 0).
+``Stations 1--3'' are the established stations. ``Station 4'' is the held-out station.
+RMSE is in m/s$^2$ and MSE is in (m/s$^2$)$^2$.
+
+%----------------------------------------------------------------------
+\subsection*{Response 1A}
+
+\textbf{My expected ordering, written before running Output 1.1.}
+
+Stations 1--3, best to worst: Period-routed ridge $\rightarrow$ Raw Attention $\rightarrow$
+Shared ridge $\rightarrow$ Sensor-specific ridge.
+
+Station 4, best to worst: Period-routed ridge $\rightarrow$ Raw Attention $\rightarrow$ Shared ridge.
+Sensor-specific ridge cannot be used here, because it has no matrix for station 4.
+
+Why I expected this:
+\begin{itemize}
+  \item Period-routed ridge is told the one thing that really changes between runs, which is how
+        fast the line is turning. It then uses a rule made for that speed, so I expected it to be the best.
+  \item Raw Attention is not told the speed. It has to work it out from the window, and the big slow
+        drift gets in the way. I expected it to be good, but behind period-routed ridge.
+  \item Shared ridge uses one fixed rule for every speed, so it can only give a middle answer that
+        suits no speed well.
+  \item Sensor-specific ridge only knows which station the window came from. The speed still changes
+        inside every station, so this does not fix the real problem, and each of its matrices is fitted
+        on only a third of the windows. I expected it to be about the same as shared ridge, or slightly worse.
+  \item On station 4 I expected Raw Attention to lose a little, because it never saw that sensor. The
+        ridge rules depend on the speed, and station 4 turns at the same speed as the others, so they
+        should lose very little.
+\end{itemize}
+
+\textbf{What Output 1.1 shows.}
+
+\begin{table}[H]
+\centering
+\caption{Output 1.1: RMSE on the validation part.}
+\begin{tabular}{lccccc}
+\toprule
+ & \multicolumn{4}{c}{Stations 1--3} & Station 4 \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-6}
+Forecaster & All & Product A & Product B & Product C & All \\
+\midrule
+Period-routed ridge   & 0.166 & 0.181 & 0.164 & 0.152 & 0.173 \\
+Raw Attention         & 0.460 & 0.419 & 0.509 & 0.446 & 0.706 \\
+Shared ridge          & 0.767 & 0.805 & 0.854 & 0.621 & 0.876 \\
+Sensor-specific ridge & 0.768 & 0.804 & 0.852 & 0.630 & not available \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+  \item The order I expected was right for both station groups: period-routed ridge, then Raw
+        Attention, then the two plain ridge models.
+  \item On stations 1--3, period-routed ridge has about 4.6 times less error than shared ridge and
+        about 2.8 times less than Raw Attention. Raw Attention cuts the error of shared ridge by about 40\%.
+  \item Shared ridge and sensor-specific ridge are a tie (0.767 and 0.768). Knowing the station adds nothing.
+  \item Period-routed ridge is the best on every product. Shared ridge is weakest on Products A and B
+        and least bad on Product C, the slowest one.
+  \item What I change in my view: the order stays, but the gaps are bigger than I thought. Raw Attention
+        is far behind period-routed ridge, not a little behind. On station 4 it gets much worse (0.460 to
+        0.706), while period-routed ridge hardly moves (0.166 to 0.173). Shared ridge also lost more on
+        station 4 than I expected (0.767 to 0.876).
+  \item Why: shared ridge assumes one rule fits every window, and that is false here because the pace
+        changes. Sensor-specific ridge assumes the station is what matters, but the pace changes inside
+        every station, so nothing is gained. Period-routed ridge assumes the pace is what matters, which
+        is true in this world, and station 4 runs at the same pace as the others. Raw Attention has to
+        learn how to compare positions from the readings alone. That works partly, but what it learned
+        is tied to the three sensors it saw, so it carries over badly to station 4.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection*{Response 1B}
+
+\begin{figure}[H]
+\centering
+\outfig{1.2-1}
+\caption{Output 1.2: station 1 in two validation windows, Product A (top) and Product C (bottom).}
+\end{figure}
+
+\begin{itemize}
+  \item Output 1.2 shows station 1 in two validation windows. In the Product A window (period 16.1)
+        the window RMSE is 0.779 for shared ridge and 0.232 for period-routed ridge. In the Product C
+        window (period 30.1) it is 0.448 against 0.150.
+  \item The compromise shows in the shape. For Product A the true signal swings between about 2.4 and
+        6.2, but the shared ridge forecast only swings between about 3.5 and 5.2, and it gets flatter
+        the further ahead it goes. For Product C it stays almost flat between 1.2\,s and 2\,s, while the
+        true signal dips and rises again.
+  \item The reason is that one matrix $\widehat{W}$ has to serve every pace from 14 to 36 samples. Where
+        the next peak falls depends on the pace, and the matrix has nothing that tells it the pace. So it
+        gives a middle answer, and in a middle answer the peaks and dips of different paces cancel each other.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\outfig{1.3-1}
+\caption{Output 1.3: Attention maps of Raw Attention for the same two validation windows of station 1, and their difference.}
+\end{figure}
+
+\begin{itemize}
+  \item Output 1.3 uses the same station and the same trained $W_Q$, $W_K$, $W_V$ for both windows, but
+        the two Attention maps are different. For Product A most of the weight sits on a few positions
+        near the end of the window. For Product C it sits on other positions further back. A single
+        weight differs by up to 0.359 between the two maps.
+  \item This happens because the weights are worked out from the readings in the window. A new window
+        gives new weights, so the values are mixed in a new way, with no refitting. Ridge multiplies
+        every window by the same fixed matrix $\widehat{W}$.
+  \item Output 1.3 does not show that Attention found the real period. It only shows that its mixing
+        weights change when the input changes.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection*{Response 2}
+
+\textbf{Selected width:} 41 samples.
+
+\begin{figure}[H]
+\centering
+\outfig{2.1-1}
+\caption{Output 2.1: station 2, Product C, one validation window (true period 32.0). Trend and remainder for four widths.}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{What I see in Output 2.1.} With width 17 the trend line still wiggles with the
+        vibration, so part of the vibration lands in the trend and the remainder is small (spread
+        0.578 m/s$^2$). With width 41 the trend is a smooth ramp and the remainder keeps the full swing
+        (spread 1.572 m/s$^2$). At both ends the width-41 trend goes flat, because the end value is
+        repeated there, so the ends are less reliable than the middle. After the width-41 split the
+        period score has one clear peak at 32. For the raw window it has no clear peak.
+  \item \textbf{Output 2.2} (training part, stations 1--3): the period is found to within one sample in
+        68.7\% of raw windows. After the split it is 98.0\% (width 17), 98.9\% (25), 99.3\% (33) and
+        99.8\% (41).
+  \item \textbf{Output 2.3} (validation part): adding decomposition to Raw Attention lowers RMSE from
+        0.460 to 0.299 on stations 1--3 (MSE 0.211 to 0.089) and from 0.706 to 0.444 on station 4. It
+        helps on every product. On stations 1--3: A 0.419 to 0.276, B 0.509 to 0.327, C 0.446 to 0.291.
+  \item \textbf{Why a moving average fits this world.} The drift is slow and the vibration is fast.
+        Averaging over a stretch at least as long as one cycle cancels the ups and downs of the vibration
+        and keeps the slow level. The simple linear head can then handle the ramp, and the encoder only
+        has to handle the repeating part.
+  \item \textbf{Why the oracle check is a fair way to pick the width.} The simulator knows the true
+        period, so we can test directly whether the remainder still shows the repetition. It uses only
+        training windows from stations 1--3, so the validation and test parts stay untouched, and the
+        true period is never given to the model.
+  \item The remainder is not the true repeating part. It is only what the average did not take out, and
+        it still holds some slow drift, mostly near the ends.
+  \item \textbf{Where this would fail.} A sudden jump in the level, for example a sensor that is
+        re-calibrated in the middle of a window. The moving average spreads the jump over 41 samples, so
+        the trend is wrong around it and the remainder gets a false bump that is not vibration.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection*{Response 3}
+
+\begin{figure}[H]
+\centering
+\outfig{3.2-1}
+\caption{Output 3.2: signal-level recurrence diagnostic for station 2, Product A, one validation window (true period $P = 16.1$). This is computed from the signal, not from learned model scores.}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Check of my code.} The worked example gives 35, 15, 25, 25, the same as expected. The
+        first value is 35, so the shift runs the right way. The supplied delay scores in Output 3.1
+        match the direct calculation ($4, -4, 4, -4$).
+  \item \textbf{Strongest lags.} The remainder repeats most strongly at lag 16 (correlation 0.896) and
+        lag 32 (0.897). These are $P$ and $2P$. The curve rises again close to lag 48, which is near
+        $3P$. Halfway between these lags it is strongly negative, because a peak then meets a dip.
+  \item \textbf{Why removing the drift first makes it cleaner.} In the raw window the curve has no peak
+        at 16 or 32. It just slides down smoothly as the lag grows. The drift is a large ramp, and a ramp
+        compared with a shifted copy of itself gives almost the same answer at every lag, so it buries
+        the small vibration. Once the trend is taken out, only lags that match the cycle line up.
+  \item \textbf{Why this supports delay mixing.} A few lags ($P$ and its multiples) carry almost all of
+        the useful information. Picking a small number of best delays and reusing values from that far
+        back is built on exactly this.
+  \item \textbf{Where the assumption is wrong.} A one-off event, such as a single knock on the machine.
+        It happens once, so no lag makes it line up with an earlier copy of itself. The delay mixer would
+        still copy values from one cycle back, so it would miss the knock, and later it would paste the
+        knock into places where nothing happened.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection*{Response 4}
+
+\textbf{(a) Before Output 4.1:}
+I expect decomposition to help the most when the slow part is large, because it takes the slow
+ramp out of the window and gives it to a simple linear head, so the mixer only has to deal with
+the repeating part. The delay mixer on its own should help less there, because a big ramp still
+looks like itself after almost any shift, and that can hide the real repeat spacing.
+
+Validation only, before Output 4.3.
+
+\begin{table}[H]
+\centering
+\caption{Outputs 1.1 and 4.1: validation part, stations 1--3.}
+\begin{tabular}{lccrr}
+\toprule
+Model & RMSE & MSE & Parameters & Fit time (s) \\
+\midrule
+Shared ridge              & 0.767 & 0.588 &   4,608 & under 1 \\
+Sensor-specific ridge     & 0.768 & 0.590 &  13,824 & under 1 \\
+Period-routed ridge       & 0.166 & 0.028 &  59,904 & under 1 \\
+Raw Attention             & 0.460 & 0.211 & 368,368 & 51 \\
+Raw delay mixer           & 0.212 & 0.045 & 368,370 & 69 \\
+Attention + decomposition & 0.299 & 0.089 & 373,024 & 63 \\
+Autoformer-inspired       & 0.199 & 0.039 & 373,026 & 82 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{(b)} On stations 1--3, both switches help. Decomposition lowers RMSE from 0.460 to 0.299 with
+Attention, but only from 0.212 to 0.199 with delay mixing. Delay mixing lowers it from 0.460 to
+0.212 on raw input and from 0.299 to 0.199 on decomposed input. Delay mixing helps more, and
+gains overlap instead of adding up. Error grows along the horizon: from step 1 to step 48, Raw
+Attention goes from 0.143 to 0.611 and period-routed ridge from 0.112 to 0.228.
+
+\begin{figure}[H]
+\centering
+\outfig{4.2-1}
+\caption{Output 4.2: validation RMSE at each step of the 48-step horizon, stations 1--3 (left) and station 4 (right).}
+\end{figure}
+
+\textbf{(c)} Stations 1--3: \textbf{Period-routed ridge}. Lowest validation RMSE (0.166 against 0.199 for
+Autoformer-inspired), 59,904 parameters against 373,026, and fits in under a second against
+82 seconds.
+
+Station 4: \textbf{Period-routed ridge}. Validation RMSE 0.173 against 0.248 for Autoformer-inspired,
+same cost.
+
+\begin{table}[H]
+\centering
+\caption{Output 4.3: the chosen models on the validation part and the final test part.}
+\begin{tabular}{llcccc}
+\toprule
+ & & \multicolumn{2}{c}{Validation} & \multicolumn{2}{c}{Test} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Stations & Chosen model & MSE & RMSE & MSE & RMSE \\
+\midrule
+Stations 1--3 & Period-routed ridge & 0.028 & 0.166 & 0.026 & 0.161 \\
+Station 4     & Period-routed ridge & 0.030 & 0.173 & 0.033 & 0.183 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%======================================================================
+% TASK 2 STARTS HERE
+%======================================================================
+\clearpage
+\section*{Task 2 --- Leaderboard Challenge}
+
+Every number below is measured on my validation part: the last 26 weeks of the history
+(\texttt{time\_idx} 39289 to 43656). Errors are in the units of the target.
+``\pmv{mean}{spread}'' is the mean and the standard deviation over random seeds.
+The code is in \texttt{Question 2 - Leaderboard/}: \texttt{autoformer.py} (model),
+\texttt{task2.py} (data, training, studies, forecast) and \texttt{report.py} (tables, figures).
+
+\begin{table}[H]
+\centering
+\small
+\caption{What I submit.}
+\label{tab:q2-submit}
+\begin{tabular}{p{0.36\linewidth}p{0.56\linewidth}}
+\toprule
+Model & Autoformer, one encoder layer, one decoder layer, width 16 \\
+Models averaged & 10: five seeds, each with a raw-target and a log-target model \\
+Total trainable parameters $P$ & 89,330 (10 $\times$ 8,933) \\
+Training epochs $E$ & 40 (10 $\times$ 4) \\
+Trained on & \texttt{time\_idx} 1 to 39288, each model once \\
+Validation, submitted average & RMSE 43.92, MAE 31.55, sMAPE 42.35 \\
+Validation, one seed alone (two models), five seeds & RMSE \pmv{45.94}{1.32}, MAE \pmv{32.87}{0.88}, sMAPE \pmv{44.01}{0.40} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\outfig{q2_fig6_progress}
+\caption{Validation RMSE of two reference points and of the five-seed average after each stage of studies.}
+\label{fig:q2-progress}
+\end{figure}
+
+%----------------------------------------------------------------------
+\subsection*{1. What the data looks like}
+
+\begin{figure}[H]
+\centering
+\outfig{q2_fig1_periodicity}
+\caption{Training part only. Left: autocorrelation of the target. Middle: autocorrelation after a
+25-step moving average is removed. Right: mean target by position in a 24-step cycle.}
+\label{fig:q2-period}
+\end{figure}
+
+\begin{itemize}
+  \item 43,656 observed values, 168 to forecast, and 43,824 rows in the optional file. No gaps and no missing values.
+  \item \textbf{Heavy tail.} In the training part the median is 74, the mean is 99 and the largest value
+        is 994. Inside one block of 168 steps the largest value is typically 30 times the smallest.
+  \item \textbf{Short memory.} The autocorrelation is 0.97 at lag 1, 0.40 at lag 24, 0.17 at lag 48 and
+        0.02 at lag 96 (Figure~\ref{fig:q2-period}, left). The past says little beyond two days.
+  \item \textbf{A weak 24-step cycle.} The time stamps are hidden, so I looked for the cycle in the data.
+        After removing a 25-step average, the autocorrelation has peaks at lags 24, 48, 72 and 96
+        (0.15, 0.11, 0.10, 0.10) and dips at 12 and 36. The mean by \texttt{time\_idx} mod 24 moves
+        between 87 and 113.
+  \item A 7-day effect is too weak to use (the mean by day-of-seven only moves between 96 and 102).
+  \item \textbf{Optional file.} A, B and C are smooth. D, E and F are strongly skewed (E is zero 99\% of
+        the time, F 96\%). G, H, I and J are flags, and exactly one of them is 1 at every step.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection*{2. Validation setup}
+
+\begin{itemize}
+  \item \textbf{Split by time.} Training part: \texttt{time\_idx} 1 to 39288. Validation part: the last
+        26 weeks, 39289 to 43656. A random split would let the model see the future.
+  \item \textbf{Many blocks, not one.} A forecast of 168 steps starts every 24 steps in the validation
+        part. That gives 176 forecasts. They all start at the same position in the daily cycle as the
+        leaderboard forecast.
+  \item \textbf{No look-ahead.} Every training window ends before the validation part starts. All
+        scaling numbers come from the training part only.
+  \item \textbf{Seeds.} Each option is trained with 3 or 5 seeds. The seed changes the starting
+        weights and the order of the batches.
+  \item \textbf{First rule (studies A to G).} Options whose mean RMSE is within one seed-spread of the
+        best count as tied. Among tied options the cheapest wins; at equal cost, the lower mean.
+  \item \textbf{Second rule (studies S1 to S10).} The option with the lowest mean RMSE wins. I changed
+        the rule because the handout says accuracy is the dominant term of the ranking (Section 2.7).
+  \item \textbf{Guard for the second rule.} Taking the lowest mean among many options favours lucky
+        seeds. So after each group of studies, the new model replaces the old one only if the average of
+        its five seeds beats the old five-seed average by more than one seed-spread.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{Reference points that need no training, on the same 176 validation forecasts.}
+\label{tab:q2-base}
+\begin{tabular}{lccc}
+\toprule
+Forecast & RMSE & MAE & sMAPE \\
+\midrule
+Always the training mean & 88.74 & 68.48 & 79.48 \\
+Repeat the last value & 124.06 & 86.54 & 88.25 \\
+Mean of the last 168 values & 96.11 & 71.78 & 81.30 \\
+Linear fit on the same-time optional values, raw target & 72.11 & 53.49 & 67.50 \\
+Linear fit on the same-time optional values, log target & 73.53 & 48.60 & 59.28 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%----------------------------------------------------------------------
+\subsection*{3. Data processing and features}
+
+\begin{itemize}
+  \item \textbf{Target:} each seed trains two models. One learns the raw target and one learns
+        $\log(1+y)$, both scaled with the training mean and spread. Each forecast is turned back to the
+        original units, kept at zero or above, and the two are averaged (Study S2).
+  \item \textbf{D, E, F:} $\log(1+x)$ before scaling, because they are strongly skewed (skewness 4.3,
+        18.4 and 11.6). \textbf{A, B, C:} scaled only. \textbf{Flags:} left as 0 and 1.
+  \item \textbf{Means and changes:} for each of the six continuous variables, the mean of the last 6
+        and of the last 24 steps, and the change over 6 and over 24 steps. That is 24 more features.
+        They use the present and earlier rows only and are scaled with training rows (Study S4).
+  \item \textbf{Daily position:} $\sin$ and $\cos$ of $2\pi\cdot$\texttt{time\_idx}$/24$. This replaces
+        the hour of the day that the hidden time stamps would have given (Study G3).
+  \item \textbf{Windows:} the model reads the last 96 values and forecasts 168
+        (\texttt{pred\_len} = 168). Every position in the training part starts a window: 39,025 windows.
+  \item \textbf{Metrics:} RMSE, MAE and sMAPE, always in the original units.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection*{4. The model}
+
+The model is the encoder--decoder Autoformer of Wu et al.\ (2021). The code is written from scratch for
+this assignment and is not copied from the public implementation; the layer layout follows the authors'
+public code. It reuses the Task 1 \texttt{SeriesDecomposition} and \texttt{aggregate\_delays}, and the
+course's \texttt{delay\_scores}. How the AI assistant was used is stated in the last section.
+
+\begin{itemize}
+  \item \textbf{Series decomposition.} A centered 25-step moving average on the input and after every
+        sub-layer, six in total. 25 is one daily cycle plus one, so the daily cycle is averaged out of the
+        trend. The encoder keeps the remainder. The decoder adds up the trends it removes.
+  \item \textbf{Auto-correlation.} Three blocks: encoder, decoder, and decoder reading the encoder.
+        Each one scores every delay with an FFT, keeps the best $k=\lfloor \ln L\rfloor$ delays (4 in
+        the encoder, 5 in the decoder), turns the scores into weights, and adds the shifted copies.
+  \item \textbf{Size.} One encoder layer, one decoder layer, width 16: 8,933 parameters per model.
+        Wider, deeper and longer-trained versions were all worse (Studies D, E, S1, S1b).
+  \item \textbf{Where the optional file enters.} The 36 known-ahead features (10 variables, 24 means
+        and changes, 2 for the daily position) go through a small two-layer network (36 to 32 to 16) and
+        are added to the inputs of both encoder and decoder. For the 168 future steps the decoder sees
+        the values of those same steps. The first version used one linear layer; the two-layer network
+        was the largest single gain (Study S3).
+  \item \textbf{One change from the paper: the starting trend} (Study A). The paper starts the future
+        trend at the mean of the input window, so it assumes the level stays where it is for all 168
+        steps. Mine starts at the last observed value. The gap between that value and the decoder's
+        own first step fades at one learned rate.
+  \item \textbf{Smaller differences:} delays are chosen per window, as in Task 1; one head; a learned
+        temperature for the delay weights.
+  \item \textbf{Training:} AdamW, one-cycle learning rate up to 0.003, gradient clipping at 5, batch
+        64, squared error on the scaled target, dropout 0.1, 4 epochs. Learning rate, dropout and epochs
+        were tested (Studies S6, S8). The rest follows the Task 1 harness.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection*{5. Decisions and their evidence}
+
+Each study changes one thing. The chosen option is carried into the next study.
+
+\subsubsection*{5.1 First studies (first rule)}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{Validation results. Chosen options are in bold.}
+\label{tab:q2-studies}
+\begin{tabular}{llcrccc}
+\toprule
+Study & Option & Seeds & $P$ & RMSE & MAE & sMAPE \\
+\midrule
+A. Starting trend & paper (window mean) & 5 & 22,084 & \pmv{119.75}{4.38} & \pmv{103.89}{4.39} & \pmv{92.79}{1.62} \\
+ & fading level & 5 & 22,085 & \pmv{60.85}{1.81} & \pmv{45.43}{1.82} & \pmv{65.65}{0.56} \\
+ & \textbf{anchor on last value} & 5 & 22,085 & \pmv{60.07}{1.12} & \pmv{44.52}{1.06} & \pmv{64.96}{0.44} \\
+\midrule
+B. Target scale & raw & 3 & 22,085 & \pmv{59.95}{1.56} & \pmv{44.30}{1.41} & \pmv{64.94}{0.62} \\
+ & \textbf{log} & 3 & 22,085 & \pmv{59.09}{1.46} & \pmv{38.42}{1.04} & \pmv{48.01}{1.14} \\
+\midrule
+C. History length & \textbf{96} & 3 & 22,085 & \pmv{57.29}{0.95} & \pmv{38.42}{1.19} & \pmv{48.34}{1.58} \\
+ & 168 & 3 & 22,085 & \pmv{59.09}{1.46} & \pmv{38.42}{1.04} & \pmv{48.01}{1.14} \\
+ & 336 & 3 & 22,085 & \pmv{59.88}{0.88} & \pmv{38.24}{0.88} & \pmv{47.43}{1.66} \\
+\midrule
+D. Width & 8 & 3 & 1,685 & \pmv{59.88}{0.22} & \pmv{39.92}{0.27} & \pmv{50.90}{0.57} \\
+ & \textbf{16} & 3 & 5,925 & \pmv{57.12}{0.35} & \pmv{38.32}{0.62} & \pmv{48.86}{0.73} \\
+ & 32 & 3 & 22,085 & \pmv{57.29}{0.95} & \pmv{38.42}{1.19} & \pmv{48.34}{1.58} \\
+ & 64 & 3 & 85,125 & \pmv{59.03}{2.48} & \pmv{39.39}{0.86} & \pmv{49.25}{1.30} \\
+\midrule
+E. Epochs & 1 & 3 & 5,925 & \pmv{59.71}{0.11} & \pmv{39.48}{0.36} & \pmv{50.02}{0.68} \\
+ & 2 & 3 & 5,925 & \pmv{57.58}{0.61} & \pmv{38.68}{0.92} & \pmv{49.53}{1.50} \\
+ & \textbf{3} & 3 & 5,925 & \pmv{57.12}{0.35} & \pmv{38.32}{0.62} & \pmv{48.86}{0.73} \\
+ & 4 & 3 & 5,925 & \pmv{57.66}{0.95} & \pmv{37.94}{1.15} & \pmv{47.82}{1.67} \\
+ & 6 & 3 & 5,925 & \pmv{59.67}{1.55} & \pmv{38.53}{0.93} & \pmv{47.72}{1.93} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{A. Starting trend.}
+\begin{itemize}
+  \item Why change it: the memory of this series is short, so the mean level of the input window is a
+        poor guess for the next seven days.
+  \item Both fading starts are far ahead of the paper's start: 60.07 and 60.85 against 119.75.
+  \item The paper's 119.75 is partly a dropout effect, so I checked it (Table~\ref{tab:q2-dropout}).
+        With dropout on, as in training, those models fit the training windows about as well as the
+        others. With dropout off, as in forecasting, they forecast 0.78 standard deviations too
+        high. The fading starts show no such gap.
+  \item Without dropout the paper's start gives \pmv{67.15}{1.21}. It is still behind the fading level
+        (\pmv{61.51}{1.28}) and the anchor (\pmv{59.71}{0.92}). So the fading starts win either way: in the fair
+        comparison by about 6 (fading level) and 7 (anchor).
+  \item My reading: the paper's start adds the window level at the very end, and no layer of the decoder
+        ever sees that level. So the decoder cannot correct it when the level does not last.
+  \item Fading level and anchor are tied on overall RMSE and cost the same, so I took the lower mean.
+        The anchor is also much better in the first hours: one step ahead its RMSE is 15.9, against
+        46.6 for the fading level and 16.7 for repeating the last value.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{Check of Study A. Left: validation RMSE with and without dropout, five seeds. Right: the
+models trained with dropout 0.1, scored on training windows in scaled units: squared error with dropout
+on and off, and the mean error with dropout off.}
+\label{tab:q2-dropout}
+\begin{tabular}{lccccc}
+\toprule
+ & \multicolumn{2}{c}{Validation RMSE} & \multicolumn{3}{c}{Training windows} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-6}
+Starting trend & dropout 0.1 & dropout 0 & error, on & error, off & mean error, off \\
+\midrule
+paper (window mean) & \pmv{119.75}{4.38} & \pmv{67.15}{1.21} & 0.50 & 1.30 & $+0.78$ \\
+fading level & \pmv{60.85}{1.81} & \pmv{61.51}{1.28} & 0.42 & 0.41 & $0.00$ \\
+anchor on last value & \pmv{60.07}{1.12} & \pmv{59.71}{0.92} & 0.42 & 0.40 & $0.00$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{B. Target scale.} RMSE is tied (59.95 raw, 59.09 log) and the cost is the same, so the lower
+mean won: log. MAE and sMAPE were clearly better with log (38.42 against 44.30, and 48.01 against
+64.94). Study S2 later replaced this by the average of both.
+
+\textbf{C. History length.} 96 steps is best and cheapest (57.29, against 59.09 for 168 and 59.88 for
+336). This fits the short memory: older values add noise, not information.
+
+\textbf{D. Width.} Width 16 gives \pmv{57.12}{0.35}. Width 32 has 3.7 times the parameters and no gain
+(\pmv{57.29}{0.95}). Width 8 is worse by more than the spread (59.88). Width 64 is worse and unstable
+(\pmv{59.03}{2.48}).
+
+\textbf{E. Epochs.} 3 epochs was best here (\pmv{57.12}{0.35}); 6 epochs gave \pmv{59.67}{1.55}.
+Study S6 later moved this to 4 for the final feature set.
+
+\textbf{Dropout} was not tuned in these studies. A check on this first model showed no real difference:
+\pmv{58.03}{0.74} without dropout and \pmv{57.56}{0.79} with it (five seeds each).
+
+\textbf{Result of the first studies:} width 16, history 96, log target, 3 epochs, one linear layer for
+the optional variables. One model: \pmv{57.56}{0.79}. Average of five seeds: 55.90. Averaging gains
+more than one seed-spread, so the forecast is an average of five seeds from here on.
+
+\subsubsection*{5.2 Later studies (second rule)}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{S1: width and epochs. S1b: encoder layers. S2: target. S3: how the optional variables enter.
+$P$ and epochs are for one seed. Chosen options are in bold.}
+\label{tab:q2-later1}
+\begin{tabular}{llcrrccc}
+\toprule
+Study & Option & Seeds & $P$ & Epochs & RMSE & MAE & sMAPE \\
+\midrule
+S1 & \textbf{width 16, 3 epochs} & 3 & 5,925 & 3 & \pmv{57.12}{0.35} & \pmv{38.32}{0.62} & \pmv{48.86}{0.73} \\
+ & width 16, 10 epochs & 3 & 5,925 & 10 & \pmv{62.37}{2.84} & \pmv{39.11}{0.67} & \pmv{47.97}{0.52} \\
+ & width 16, 20 epochs & 3 & 5,925 & 20 & \pmv{61.55}{2.87} & \pmv{39.37}{1.09} & \pmv{48.25}{1.24} \\
+ & width 32, 3 epochs & 3 & 22,085 & 3 & \pmv{57.29}{0.95} & \pmv{38.42}{1.19} & \pmv{48.34}{1.58} \\
+ & width 32, 10 epochs & 3 & 22,085 & 10 & \pmv{66.02}{3.37} & \pmv{42.63}{4.49} & \pmv{50.47}{3.47} \\
+ & width 32, 20 epochs & 3 & 22,085 & 20 & \pmv{66.01}{1.46} & \pmv{41.56}{2.17} & \pmv{49.72}{1.66} \\
+ & width 64, 3 epochs & 3 & 85,125 & 3 & \pmv{59.03}{2.48} & \pmv{39.39}{0.86} & \pmv{49.25}{1.30} \\
+ & width 64, 10 epochs & 3 & 85,125 & 10 & \pmv{58.89}{1.16} & \pmv{38.59}{0.37} & \pmv{48.20}{0.42} \\
+ & width 64, 20 epochs & 3 & 85,125 & 20 & \pmv{58.88}{3.48} & \pmv{38.69}{1.56} & \pmv{47.95}{1.17} \\
+\midrule
+S1b & \textbf{1 encoder layer} & 3 & 5,925 & 3 & \pmv{57.12}{0.35} & \pmv{38.32}{0.62} & \pmv{48.86}{0.73} \\
+ & 2 encoder layers & 3 & 8,038 & 3 & \pmv{57.69}{0.73} & \pmv{38.68}{0.55} & \pmv{49.49}{0.80} \\
+\midrule
+S2 & raw target & 5 & 5,925 & 3 & \pmv{60.33}{1.02} & \pmv{45.57}{1.36} & \pmv{65.04}{0.59} \\
+ & log target & 5 & 5,925 & 3 & \pmv{57.56}{0.79} & \pmv{38.41}{0.46} & \pmv{48.78}{0.53} \\
+ & \textbf{average of raw and log} & 5 & 11,850 & 6 & \pmv{56.70}{0.47} & \pmv{40.50}{0.83} & \pmv{52.50}{1.35} \\
+\midrule
+S3 & linear layer & 5 & 11,850 & 6 & \pmv{56.70}{0.47} & \pmv{40.50}{0.83} & \pmv{52.50}{1.35} \\
+ & \textbf{two-layer network} & 5 & 12,938 & 6 & \pmv{50.76}{1.78} & \pmv{35.55}{0.94} & \pmv{46.59}{0.74} \\
+ & linear layer + means, changes & 5 & 13,386 & 6 & \pmv{53.65}{0.32} & \pmv{37.00}{0.63} & \pmv{48.55}{0.92} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{S1, S1b: size and training length.} Width 16 with 3 epochs stayed best. Training longer
+        was worse at every width (width 16: 57.12 with 3 epochs, 62.37 with 10). A second encoder layer
+        did not help (57.69).
+  \item \textbf{S2: target.} The average of a raw-target and a log-target model beats both alone
+        (56.70 against 60.33 and 57.56). The raw model is better on high values and the log model on
+        low ones, so their errors partly cancel. One seed is now two models.
+  \item \textbf{S3: how the optional variables enter.} A two-layer network in place of the linear layer
+        cut RMSE from 56.70 to 50.76. Adding means and changes to the linear layer gave 53.65. A linear
+        layer can only add each variable's effect; the network can combine variables.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{S4: two-layer network with and without the means and changes over 6 and 24 steps. S5: hidden width
+of the network. S5b: its number of layers. S6: epochs. $P$ and epochs are for one seed. Chosen options are in bold.}
+\label{tab:q2-later2}
+\begin{tabular}{llcrrccc}
+\toprule
+Study & Option & Seeds & $P$ & Epochs & RMSE & MAE & sMAPE \\
+\midrule
+S4 & network alone & 5 & 12,938 & 6 & \pmv{50.76}{1.78} & \pmv{35.55}{0.94} & \pmv{46.59}{0.74} \\
+ & \textbf{network + means, changes} & 5 & 14,474 & 6 & \pmv{46.69}{0.49} & \pmv{33.24}{0.30} & \pmv{44.31}{0.43} \\
+\midrule
+S5 & hidden width 16 & 5 & 14,474 & 6 & \pmv{46.69}{0.49} & \pmv{33.24}{0.30} & \pmv{44.31}{0.43} \\
+ & \textbf{hidden width 32} & 5 & 17,866 & 6 & \pmv{45.99}{1.15} & \pmv{32.86}{0.74} & \pmv{43.86}{0.74} \\
+ & hidden width 64 & 5 & 24,650 & 6 & \pmv{46.53}{1.10} & \pmv{33.04}{0.71} & \pmv{43.66}{0.76} \\
+\midrule
+S5b & \textbf{2 layers} & 5 & 17,866 & 6 & \pmv{45.99}{1.15} & \pmv{32.86}{0.74} & \pmv{43.86}{0.74} \\
+ & 3 layers & 5 & 22,090 & 6 & \pmv{50.79}{2.46} & \pmv{35.65}{1.44} & \pmv{46.19}{1.09} \\
+\midrule
+S6 & 2 epochs & 5 & 17,866 & 4 & \pmv{46.07}{0.71} & \pmv{33.04}{0.51} & \pmv{44.04}{0.54} \\
+ & 3 epochs & 5 & 17,866 & 6 & \pmv{45.99}{1.15} & \pmv{32.86}{0.74} & \pmv{43.86}{0.74} \\
+ & \textbf{4 epochs} & 5 & 17,866 & 8 & \pmv{45.94}{1.32} & \pmv{32.87}{0.88} & \pmv{44.01}{0.40} \\
+ & 6 epochs & 5 & 17,866 & 12 & \pmv{48.23}{0.68} & \pmv{34.23}{0.34} & \pmv{45.08}{0.65} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{S4: both ideas of S3 together.} The two-layer network with the means and changes gives
+        \pmv{46.69}{0.49}, against \pmv{50.76}{1.78} without them. A clear gain.
+  \item \textbf{S5, S5b: size of the network.} Hidden width 32 has the lowest mean (45.99), but 16 and
+        64 are inside one seed-spread of it. Three layers are clearly worse (50.79).
+  \item \textbf{S6: epochs.} 2, 3 and 4 epochs are inside one seed-spread (46.07, 45.99, 45.94). 6 is
+        worse (48.23). The rule takes the lowest mean, 4.
+  \item \textbf{What is solid and what is not:} S2, S3, S4 and S5b are clear. The picks in S5 and S6
+        are inside the seed noise; they are there because a tie now goes to the lower mean.
+\end{itemize}
+
+\subsubsection*{5.3 The checks that decided}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Check after each group of studies: average of five seeds, before and after. ``Halves'' is the RMSE of
+the new average on the first and on the last 88 validation forecasts.}
+\label{tab:q2-checks}
+\begin{tabular}{lcccccc}
+\toprule
+Studies & Before & After & Gain & One seed-spread & Halves & Kept \\
+\midrule
+S1 to S3 & 55.90 & 48.96 & 6.94 & 1.78 & 37.79 / 58.02 & yes \\
+S4 to S6 & 48.96 & 43.92 & 5.05 & 1.78 & 36.18 / 50.48 & yes \\
+S7 and S8 & 43.92 & 43.92 & 0.00 & 1.32 & 36.18 / 50.48 & nothing to replace \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Both gains (6.94 and 5.05) are several times the seed-spread, so both new models were kept
+(Figure~\ref{fig:q2-progress}).
+
+\subsubsection*{5.4 Tested and not adopted}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{Studies on the selected model, five seeds each. S7: more features from the optional file. S8a to
+S8c: learning rate, dropout, decomposition window. ``Half 1'' and ``Half 2'' are the RMSE on the first and last
+88 validation forecasts. The current setting (bold) won every study.}
+\label{tab:q2-rejected}
+\begin{tabular}{llcccccc}
+\toprule
+Study & Option & RMSE & MAE & sMAPE & Half 1 & Half 2 & Mean error \\
+\midrule
+S7 & \textbf{6 and 24 steps (as now)} & \pmv{45.94}{1.32} & \pmv{32.87}{0.88} & \pmv{44.01}{0.40} & 37.72 & 52.89 & $+9.77$ \\
+ & + 3 and 12 steps & \pmv{47.37}{0.79} & \pmv{33.63}{0.73} & \pmv{44.43}{0.71} & 39.28 & 54.26 & $+9.17$ \\
+ & + 48 steps & \pmv{46.40}{1.42} & \pmv{32.92}{0.72} & \pmv{43.32}{1.07} & 38.80 & 52.92 & $+10.73$ \\
+ & + spread, min, max & \pmv{47.00}{1.78} & \pmv{33.14}{1.26} & \pmv{43.91}{1.51} & 37.51 & 54.87 & $+8.38$ \\
+\midrule
+S8a & learning rate 0.001 & \pmv{47.17}{0.56} & \pmv{33.50}{0.53} & \pmv{44.12}{0.81} & 37.70 & 55.04 & $+7.07$ \\
+ & \textbf{learning rate 0.003} & \pmv{45.94}{1.32} & \pmv{32.87}{0.88} & \pmv{44.01}{0.40} & 37.72 & 52.89 & $+9.77$ \\
+ & learning rate 0.006 & \pmv{48.78}{1.88} & \pmv{34.79}{0.66} & \pmv{45.67}{0.94} & 40.13 & 56.08 & $+12.31$ \\
+\midrule
+S8b & dropout 0.0 & \pmv{47.62}{1.66} & \pmv{34.55}{1.07} & \pmv{45.49}{0.74} & 39.59 & 54.48 & $+13.56$ \\
+ & \textbf{dropout 0.1} & \pmv{45.94}{1.32} & \pmv{32.87}{0.88} & \pmv{44.01}{0.40} & 37.72 & 52.89 & $+9.77$ \\
+ & dropout 0.2 & \pmv{47.42}{0.65} & \pmv{33.51}{0.38} & \pmv{44.22}{0.53} & 38.67 & 54.78 & $+8.49$ \\
+\midrule
+S8c & window 13 & \pmv{46.17}{0.59} & \pmv{33.30}{0.57} & \pmv{44.46}{0.72} & 38.23 & 52.93 & $+9.89$ \\
+ & \textbf{window 25} & \pmv{45.94}{1.32} & \pmv{32.87}{0.88} & \pmv{44.01}{0.40} & 37.72 & 52.89 & $+9.77$ \\
+ & window 49 & \pmv{49.45}{1.64} & \pmv{35.28}{1.10} & \pmv{45.79}{0.79} & 39.28 & 57.85 & $+11.52$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{S7: more features.} Windows of 3, 12 or 48 steps, or the spread, minimum and maximum
+        over 24 steps, did not help (46.40 to 47.37 against 45.94).
+  \item \textbf{S8: learning rate, dropout, decomposition window.} The values in use (0.003, 0.1, 25)
+        have the lowest mean in each study. A window of 49 and a learning rate of 0.006 are clearly worse.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{Study S9, recent data, five seeds. Each half of validation (85 forecasts that lie fully inside it)
+is forecast by models trained on different rows.}
+\label{tab:q2-recent}
+\begin{tabular}{lllcccc}
+\toprule
+Scored on & Trained & Rows & RMSE & MAE & sMAPE & Mean error \\
+\midrule
+First half & without the 13 weeks before it & 1--37104 & \pmv{38.54}{1.06} & \pmv{29.34}{0.73} & \pmv{43.93}{0.98} & $+11.40$ \\
+ & with them & 1--39288 & \pmv{37.69}{0.88} & \pmv{28.90}{0.86} & \pmv{43.50}{0.93} & $+12.00$ \\
+ & only the two years before it & 21769--39288 & \pmv{38.53}{0.30} & \pmv{28.30}{0.28} & \pmv{43.50}{0.64} & $-0.05$ \\
+\midrule
+Second half & without the 13 weeks before it & 1--39288 & \pmv{53.19}{1.89} & \pmv{36.85}{1.21} & \pmv{44.44}{1.05} & $+7.23$ \\
+ & with them & 1--41472 & \pmv{55.13}{1.01} & \pmv{37.89}{0.59} & \pmv{44.59}{1.15} & $+7.15$ \\
+ & only the two years before it & 23953--41472 & \pmv{59.96}{1.48} & \pmv{42.71}{0.78} & \pmv{50.51}{0.85} & $+13.20$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{S9: recent data.} Training with the newest 13 weeks helps in the first half (37.69
+        against 38.54) and hurts in the second (55.13 against 53.19). Training on only the last two
+        years is worse in the second half (59.96). So there is no case for retraining on all 43,656 rows,
+        and the models stay trained on rows 1 to 39288.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Study S10: how many seeds to average.}
+\label{tab:q2-ten}
+\begin{tabular}{lrrccc}
+\toprule
+Forecast & $P$ & $E$ & RMSE & MAE & sMAPE \\
+\midrule
+five seeds (all 252 choices of five) & 89,330 & 40 & \pmv{44.37}{0.51} & \pmv{31.65}{0.36} & \pmv{42.07}{0.48} \\
+ten seeds & 178,660 & 80 & 44.11 & 31.48 & 41.85 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{S10: five or ten seeds.} Ten seeds give 44.11. A five-seed average gives
+        \pmv{44.37}{0.51}, depending on which five. The five I submit (seeds 0 to 4) score 43.92.
+  \item I submit the five-seed average: it has the lower validation RMSE of the two forecasts I could
+        submit and half the cost. The gap to ten seeds (0.19) is smaller than the spread between
+        choices of five, so this is not evidence that five is more accurate than ten.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection*{6. What the optional file did}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{Ablation of the optional file on the selected model, five seeds each. One seed is a raw-target
+and a log-target model. The continuous variables come with their means and changes.}
+\label{tab:q2-optional}
+\begin{tabular}{llcrccc}
+\toprule
+Question & Optional file & Seeds & $P$ & RMSE & MAE & sMAPE \\
+\midrule
+Which part & no optional file & 5 & 13,514 & \pmv{84.85}{0.06} & \pmv{60.65}{0.08} & \pmv{73.86}{0.05} \\
+ & past values only & 5 & 17,866 & \pmv{85.70}{0.53} & \pmv{60.56}{0.17} & \pmv{73.57}{0.28} \\
+ & \textbf{past and future (submitted)} & 5 & 17,866 & \pmv{45.94}{1.32} & \pmv{32.87}{0.88} & \pmv{44.01}{0.40} \\
+\midrule
+Which variables & flags only (G--J) & 5 & 14,026 & \pmv{66.46}{1.35} & \pmv{46.64}{0.77} & \pmv{57.11}{0.54} \\
+ & continuous only (A--F) & 5 & 17,354 & \pmv{44.82}{1.32} & \pmv{32.46}{0.85} & \pmv{44.99}{1.05} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\outfig{q2_fig2_lead_time}
+\caption{Validation RMSE at each of the 168 lead times for the selected model, five seeds. Every forecast
+starts at the same position in the daily cycle, so the waves are a time-of-day effect.}
+\label{fig:q2-lead}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Without the file} the model is close to always predicting the training mean
+        (\pmv{84.85}{0.06} against 88.74).
+  \item \textbf{Past values only} do not help: \pmv{85.70}{0.53}.
+  \item \textbf{Past and future values} cut RMSE by 46\% (84.85 to 45.94). All of the gain comes from
+        the values of the 168 steps being forecast.
+  \item \textbf{By lead time} (Figure~\ref{fig:q2-lead}): one step ahead all versions are equal (about
+        16 to 17, like repeating the last value at 16.7). At 12 steps the version with future values is at
+        37.7 and the others at 63.6 and 64.5. From lead 25 on the means are 47.2 against 87.6 and 88.6.
+  \item \textbf{Why this is where it should enter:} values up to the forecast start describe a past the
+        target history already shows. Values over the horizon are known when the forecast is made, so
+        they belong in the decoder, at the steps they describe.
+  \item \textbf{Which variables:} the continuous ones carry the signal. Flags alone give
+        \pmv{66.46}{1.35}. Continuous alone give \pmv{44.82}{1.32}, the same as all ten within one
+        seed-spread (\pmv{45.94}{1.32}). So on this model the four flags add nothing I can measure.
+        I kept all ten, because every study was run with them.
+  \item The same pattern showed on the first model (linear layer, log target, five seeds): no file
+        88.49, past only 88.11, past and future 57.56.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Rise in validation RMSE when one variable is shuffled in the validation part, together with its
+own means and changes (five seeds of the selected model, no retraining). The four flags are shuffled together.}
+\label{tab:q2-importance}
+\begin{tabular}{lccccccc}
+\toprule
+Variable & A & B & C & D & E & F & G--J \\
+\midrule
+RMSE rise & \pmv{127.4}{54.6} & \pmv{85.1}{27.8} & \pmv{3.5}{1.3} & \pmv{8.0}{1.6} & \pmv{0.0}{0.1} & \pmv{6.7}{0.7} & \pmv{2.0}{0.7} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A and B carry most of the signal. E carries none; it is zero 99\% of the time.
+
+%----------------------------------------------------------------------
+\subsection*{7. Where the three metrics disagree}
+
+\begin{itemize}
+  \item \textbf{The ranking flips in Study S2.} RMSE prefers the average of a raw and a log model
+        (56.70 against 57.56 for log alone). MAE and sMAPE prefer log alone (38.41 against 40.50, and
+        48.78 against 52.50).
+  \item \textbf{Where each one errs} (Study B, validation): 29\% of the true values are below 30. There
+        the mean absolute error is 32.9 with the raw target and 19.7 with log. 11\% are above 200.
+        There it is 100.8 with raw and 114.4 with log.
+  \item \textbf{The same flip for the linear fit:} RMSE prefers the raw target (72.11 against 73.53)
+        while MAE and sMAPE prefer log (48.60 against 53.49, and 59.28 against 67.50).
+  \item \textbf{Why:} RMSE squares the error, so a few very high hours decide it. sMAPE divides by the
+        level, so the many low hours count as much as the high ones. MAE sits between the two.
+  \item The leaderboard ranks by RMSE, so I chose on RMSE and used the other two as a check.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection*{8. How much one 168-step score tells}
+
+\begin{figure}[H]
+\centering
+\outfig{q2_fig4_block_rmse}
+\caption{RMSE of each of the 176 validation forecasts of the submitted model.}
+\label{fig:q2-blocks}
+\end{figure}
+
+\begin{itemize}
+  \item One block's RMSE runs from 18 to 85. The mean is 42.1 and the spread is 12.6. About 6 in 10
+        blocks are within 10 of the mean.
+  \item The period matters: the first half of the validation part has RMSE 36.18 and the second half
+        50.48. The hidden week comes right after the harder half.
+  \item The options I had to choose between at the end differ by less than 1 RMSE. One block varies by
+        12.6. So a single leaderboard score cannot tell two good options apart.
+  \item I therefore made every decision on the 176 validation forecasts and treat the leaderboard
+        score as a check, not as a tuning signal.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection*{9. The forecast, $P$ and $E$}
+
+\begin{figure}[H]
+\centering
+\outfig{q2_fig3_examples}
+\caption{Three validation forecasts of the submitted model: an easy, a typical and a hard block. The orange
+line is the same model without the optional file.}
+\label{fig:q2-examples}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\outfig{q2_fig5_submission}
+\caption{The last 336 observed values and the submitted forecast for \texttt{time\_idx} 43657 to 43824.}
+\label{fig:q2-submission}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{$P$ = 89,330:} ten models of 8,933 trainable parameters each, counted with\\
+        \texttt{sum(p.numel() for p in model.parameters() if p.requires\_grad)}.
+  \item \textbf{$E$ = 40:} ten models, 4 epochs each. One epoch is one pass over all 39,025 training
+        windows (610 batches of 64). Each model is trained once. There is no early stopping and no
+        refit on the full history, so no other epochs are spent on the forecast.
+  \item \textbf{The forecast} starts at 18.8, next to the last observed value of 18. It ranges from 6.5
+        to 275 with a mean of 107.
+  \item \textbf{To reproduce:} \texttt{python task2.py submit} trains the ten models and writes the 168
+        values (about three minutes on my GPU). Training them again from scratch gave the same 168
+        values on my machine. \texttt{python task2.py study} repeats every study.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection*{10. Limits}
+
+\begin{itemize}
+  \item \textbf{Too high on average.} The mean error of the submitted average is $+9.8$. It grows with
+        the lead time: $-0.5$ one step ahead, $+11.4$ at 24 steps and $+20.6$ at 168.
+  \item \textbf{Too low on the highest values.} The largest 10\% of true values (above 210) are forecast
+        45 too low on average and hold 39\% of the squared error. None of Studies S7 to S10 fixed this.
+  \item \textbf{The second half of validation is harder} (50.48 against 36.18), and the hidden week
+        follows it.
+  \item \textbf{Validation was used many times} (about 400 training runs). The five-seed checks guard
+        against lucky picks, but 43.92 is probably a little optimistic for new data.
+  \item The validation part is one stretch of 26 weeks. Other times of the year are not tested.
+  \item The submitted models never trained on the last 26 weeks. Study S9 found no steady gain from
+        doing so.
+  \item In Study A the anchor and the fading level are tied on overall RMSE. I added the anchor after a
+        first full run showed that the fading level was poor in the first hours.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection*{Reflection questions}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Extra studies used in the answers below (validation, three seeds). They were run on the model of the
+first studies: linear layer, log target, 3 epochs.}
+\label{tab:q2-reflect}
+\begin{tabular}{llccc}
+\toprule
+Study & Option & RMSE & MAE & sMAPE \\
+\midrule
+G1. Number of delays, $k=\lfloor c\ln L\rfloor$ & \textbf{$c=1$} & \pmv{57.12}{0.35} & \pmv{38.32}{0.62} & \pmv{48.86}{0.73} \\
+ & $c=2$ & \pmv{57.61}{0.25} & \pmv{38.74}{0.21} & \pmv{49.30}{0.36} \\
+ & $c=3$ & \pmv{58.24}{0.88} & \pmv{38.89}{0.93} & \pmv{49.08}{1.10} \\
+\midrule
+G2. Window-relative normalisation & \textbf{off} & \pmv{57.12}{0.35} & \pmv{38.32}{0.62} & \pmv{48.86}{0.73} \\
+ & on & \pmv{93.08}{2.38} & \pmv{50.21}{1.34} & \pmv{58.14}{1.50} \\
+\midrule
+G3. Daily $\sin$/$\cos$ features & off & \pmv{58.87}{0.74} & \pmv{39.92}{0.18} & \pmv{51.00}{0.25} \\
+ & \textbf{on} & \pmv{57.12}{0.35} & \pmv{38.32}{0.62} & \pmv{48.86}{0.73} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Q2.1 Lags against positions.}
+\begin{itemize}
+  \item \textbf{Lags are better} for a signal that repeats with a steady period inside the window. Every
+        pair of points one period apart is related for the same reason, and one score per delay pools
+        all of them. My Task 1 result (validation, stations 1--3): delay mixing against Attention gave
+        RMSE 0.212 against 0.460 on raw input and 0.199 against 0.299 on decomposed input.
+  \item \textbf{Lags lose something} when what matters is one place, not a spacing: a single event, a
+        change point, a pattern that happens once. Attention can give that one position a high weight.
+        Delay mixing shifts the whole window by the same amount and joins its end to its start.
+  \item \textbf{Slow drift of the period:} delays are scored afresh for each window, so they follow a
+        period that changes from window to window. In Task 1 the period changed between runs and
+        delay mixing still worked.
+  \item \textbf{Drift inside one window:} no single delay lines the cycles up. The best score gets low
+        and wide and the mix blurs. Attention is not tied to one spacing, so it suffers less.
+  \item In Task 2 the cycle is weak, so the delays add little by themselves: without the optional file
+        the selected model scores 84.85, close to always predicting the training mean (88.74).
+\end{itemize}
+
+\textbf{Q2.2 The moving-average trend.}
+\begin{itemize}
+  \item \textbf{What it assumes:} the trend is smooth and changes slowly compared with the 25-step
+        width. Anything faster is counted as seasonal.
+  \item \textbf{Boundaries:} the ends are padded by repeating the end value, so near the forecast start
+        the trend leans toward the last value and lags a rising or falling level.
+  \item \textbf{Curvature:} an average cuts peaks and fills valleys, so a bending trend is flattened.
+  \item \textbf{Abrupt shift:} a jump is spread over 25 steps. The trend shows a ramp that never
+        happened and the remainder gets a false bump. My series has such jumps.
+  \item \textbf{Alternative:} one-sided exponential smoothing with a learned rate. It assumes recent
+        values matter most and needs no values to the right of the forecast start, so no padding
+        there. What I give up: it lags the trend everywhere, and it no longer cancels a known cycle
+        the way a 25-step average cancels a 24-step cycle.
+\end{itemize}
+
+\textbf{Q2.3 Decomposing once or in every block.}
+\begin{itemize}
+  \item \textbf{What repeating buys:} a one-time split only cleans the input. Inside the network each
+        layer adds its output back to the stream, and slow parts can come back. Removing them after
+        every sub-layer keeps the stream free of drift, so delay scoring is not swamped by it. It
+        also lets the decoder build the trend step by step.
+  \item My evidence from Task 1: the repeat at one period only showed after the trend was removed
+        (correlation 0.896, Output 3.2), and decomposition inside the network cut validation RMSE
+        from 0.460 to 0.299 (stations 1--3).
+  \item \textbf{Where it hurts:} when the slow part is itself the signal. Every decomposition removes
+        the level again and the encoder throws it away, so the decoder cannot see how high the
+        window is. In Task 2 I think this is why the paper's start is behind (67.15 against 59.71
+        without dropout, Table~\ref{tab:q2-dropout}).
+  \item Each moving average also has an edge error, and repeating it stacks those errors. This may be
+        why my error rises at the very last lead.
+\end{itemize}
+
+\textbf{Q2.4 The number of delays, $k = c\log L$.}
+\begin{itemize}
+  \item $k$ is how many delays are kept. In my model $k=\lfloor\ln L\rfloor$: 4 in the encoder ($L=96$)
+        and 5 in the decoder ($L=216$).
+  \item \textbf{Larger $k$:} more spacings are mixed, also weak ones that are mostly noise. The output
+        gets blurred and costs more.
+  \item \textbf{Smaller $k$:} sharper and cheaper, but it can miss a real period or bet on one wrong
+        delay. Mixing a few delays is a hedge under squared error.
+  \item \textbf{$\log L$ is convenient, not principled.} It keeps $k$ small as the window grows. But how
+        many delays are needed depends on how many real periods the signal has, not on the window
+        length. $k$ should be at least the number of periods one wants to catch, with their multiples.
+  \item \textbf{Experiment} (Table~\ref{tab:q2-reflect}): $c$ = 1, 2, 3 gave RMSE 57.12, 57.61, 58.24.
+        More delays did not help. This series has one weak daily cycle, so few delays are enough.
+\end{itemize}
+
+\textbf{Q2.5 One shot or feeding predictions back.}
+\begin{itemize}
+  \item \textbf{One shot} (my model): all 168 steps come out together. No error is fed back, and the
+        model is used exactly as it was trained. Errors at neighbouring leads are alike, but they do
+        not build on each other.
+  \item \textbf{Feeding back:} each step uses earlier predictions, so errors pile up with the horizon.
+        The model is trained on true inputs but used on its own outputs. One early miss drags all
+        later steps, so the errors along the horizon are strongly linked.
+  \item \textbf{Feeding back is better} when the one-step rule is simple and stable, noise is small and
+        the horizon is short. \textbf{One shot is better} for long horizons, heavy tails and when
+        known-ahead inputs exist for every step.
+  \item As the horizon grows, one shot wins. Here repeating the last value has RMSE 16.7 one step ahead
+        but 138 at 48 steps, while one seed of my model stays between about 39 and 62 from lead 24 on.
+  \item I did not train a feed-back version, so this answer is reasoning, not a measured comparison.
+\end{itemize}
+
+\textbf{Q2.6 Window-relative normalisation.}
+\begin{itemize}
+  \item \textbf{What is destroyed:} the window's own level and spread, that is, how high and how lively
+        the window is compared with the whole series.
+  \item \textbf{When it matters:} when the future depends on that level. In a series that returns to a
+        fixed mean, a high window should come down and a low one should go up.
+  \item \textbf{Helps a lot:} when level differs between series for reasons that do not change the
+        shape. In Task 1 the stations had different offsets, and anchoring let one model serve the
+        unseen station 4.
+  \item \textbf{Loses something essential:} a series that returns to a fixed mean. The best forecast is
+        the mean plus a fading share of the present gap. After normalisation the model cannot know
+        the gap.
+  \item \textbf{Experiment} (Table~\ref{tab:q2-reflect}): with window-relative normalisation RMSE is
+        93.08 against 57.12 without. Putting the window level back assumes the level stays, and in
+        this series it does not.
+\end{itemize}
+
+\textbf{Q2.7 Variables known up to the origin, or across the horizon.}
+\begin{itemize}
+  \item It changes \textbf{where} they enter, not only how much they help. A variable known only up to
+        the origin can only enter with the history, in the encoder. A variable known across the
+        horizon can also enter the decoder at the steps being forecast.
+  \item \textbf{Experiment} (Table~\ref{tab:q2-optional}): no file 84.85, past only 85.70, past and
+        future 45.94. The same variables are almost useless in the first case and decisive in the second.
+  \item \textbf{Useful only when known ahead:} a variable that changes fast and has little memory, so its
+        past says little about its future. The flags are like this (correlation with their own value
+        24 steps earlier: 0.04 to 0.23).
+  \item \textbf{Equally useful in both:} a variable whose future follows from its past, such as the
+        position in the daily cycle or a fixed schedule. Knowing it ahead adds nothing new.
+\end{itemize}
+
+\textbf{Q2.8 No calendar.}
+\begin{itemize}
+  \item \textbf{What is lost:} hour of day, day of week, month and holidays. The model cannot be told
+        ``it is Monday morning'' or ``it is winter''.
+  \item \textbf{How I recovered the cycle:} from the data (Figure~\ref{fig:q2-period}). After removing a
+        25-step average the autocorrelation peaks at lags 24, 48, 72 and 96, and the mean by
+        \texttt{time\_idx} mod 24 moves between 87 and 113. So I used $\sin$ and $\cos$ of the position
+        in a 24-step cycle, and a 25-step moving average.
+  \item \textbf{Experiment} (Table~\ref{tab:q2-reflect}): 57.12 with the daily features, 58.87 without.
+  \item \textbf{What must hold:} equal steps with no gaps (given); a cycle length that stays the same
+        over the whole series; and enough cycles to average out noise (1,637 in the training part).
+  \item A 7-day effect is too weak to trust, and the training part holds only four and a half yearly
+        cycles, so I used neither.
+\end{itemize}
+
+\textbf{Q2.9 Structural methods against a decomposition Transformer.}
+\begin{itemize}
+  \item \textbf{Structural methods} fit few numbers under strong assumptions. They win when the series
+        is short, noisy and regular.
+  \item \textbf{A Transformer} assumes less and fits thousands of numbers. It needs many windows and a
+        pattern that the simple model cannot express. It also takes extra inputs easily.
+  \item \textbf{The crossover} moves toward the Transformer as the series gets longer, the noise gets
+        smaller and the structure gets richer.
+  \item \textbf{Before training I would check:} windows against parameters; how regular the series is
+        (autocorrelation, share of a clean cycle); and the score of cheap baselines.
+  \item \textbf{My evidence:} a linear fit with 13 numbers on the optional file (72.11) beats my
+        Autoformer without the file (84.85, with 13,514 parameters for one seed). With the file, the
+        Autoformer (45.94 for one seed) beats the linear fit. In Task 1 a hand-built linear model (0.166) beat every neural
+        model (best 0.199). More size did not help here: on the first model, width 64 with 85,125 parameters gave
+        59.03 against 57.12 for width 16.
+  \item I did not fit ETS or SARIMA. The classical side of this comparison is only the linear fit and
+        the simple baselines of Table~\ref{tab:q2-base}.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsection*{References}
+
+\begin{itemize}
+  \item H. Wu, J. Xu, J. Wang, M. Long (2021). Autoformer: Decomposition Transformers with
+        Auto-Correlation for Long-Term Series Forecasting. \emph{NeurIPS}. Sections 3.1--3.2.
+  \item Authors' public code, used for the layer layout: \url{https://github.com/thuml/Autoformer}.
+  \item Task 1 notebook of this assignment: \texttt{SeriesDecomposition}, \texttt{aggregate\_delays}
+        (written for Task 1) and \texttt{delay\_scores} (supplied by the course).
+\end{itemize}
+
+
+%----------------------------------------------------------------------
+\subsection*{Use of generative AI}
+
+I used Claude Code (Anthropic, model Claude Opus 5.5) as an assistant for this assignment. The table lists my
+main prompts and what the assistant produced. The assistant wrote the code, ran the experiments and
+drafted this report from the stored results.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabular}{p{0.47\linewidth}p{0.47\linewidth}}
+\toprule
+My prompt (shortened) & Output of the assistant \\
+\midrule
+``Review the DL4STG-PA1.pdf file and understand the complete requirement \ldots\ Focus on the Task 1 and
+complete the assignment1.ipynb file \ldots\ create a venv \ldots'' &
+Project notes, the Python environment, the three implementation cells of the Task 1 notebook, and the
+notes in the notebook, including the two predictions written before the runs. \\
+\addlinespace
+``Just create a Latex source code \ldots\ Just add the answers related to the task 1.'' &
+The Task 1 part of this report, from the notebook outputs. \\
+\addlinespace
+``Plan the implementation of the Task 2 \ldots\ Implement all the requested methods and fulfil the
+requirements.'' &
+\texttt{autoformer.py}, \texttt{task2.py}, \texttt{report.py}, Studies A to G, and the first forecast. \\
+\addlinespace
+Three change requests: ``Goal: lower the validation RMSE of the final model \ldots\ a tie now goes to
+the lower mean RMSE \ldots\ add three studies \ldots'' &
+Studies S1 to S10 with their checks, and the forecast of the selected model. \\
+\addlinespace
+``Add all findings to the LaTeX report and do not leave any asked question'' (asked in Roman Urdu); later
+``update the latex code according to the new finding and add new graphs.'' &
+The Task 2 part of this report, the answers to Q2.1 to Q2.9, the tables and the figures. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{What I did and decided myself:} I ran the full-preset Task 1 notebook and entered the two
+deployment choices; I asked for the change of the selection rule and for Studies S1 to S10; I chose the
+five-seed average as the submitted model; I submit the forecast to the leaderboard.
+
+\textbf{Edits I made to the assistant's output:} TO COMPLETE BEFORE SUBMITTING.
+
+\end{document}

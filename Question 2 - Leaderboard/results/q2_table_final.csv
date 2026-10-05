@@ -1,0 +1,4 @@
+quantity,RMSE,MAE,sMAPE
+"single model, mean over seeds",45.94,32.87,44.01
+"single model, spread over seeds",1.32,0.88,0.4
+average of the seeds' forecasts,43.92,31.55,42.35

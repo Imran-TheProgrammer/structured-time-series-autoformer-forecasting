@@ -1,0 +1,3 @@
+option,seeds,P,epochs,rmse_mean,rmse_std,mae_mean,mae_std,smape_mean,smape_std,rmse_half1,rmse_half2,mean_error,chosen
+raw,3,22085,3,59.95396,1.55657,44.29869,1.41229,64.93855,0.62012,46.72994,70.74212,9.34058,False
+log,3,22085,3,59.08815,1.46028,38.42369,1.03863,48.01295,1.13621,41.48657,72.51905,-1.6614,True
