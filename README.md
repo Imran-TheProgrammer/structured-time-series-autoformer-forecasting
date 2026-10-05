@@ -1,13 +1,7 @@
-# AI651 Assignment 1
 
-Course: Deep Learning for Space, Time and Graphs, Fall 2026.
 
 This repo has two tasks. Both are about forecasting a time series.
 
-| Item | Where |
-| --- | --- |
-| Assignment handout | `DL4STG-PA1.pdf` |
-| Report (LaTeX source) | `latex_source.txt` |
 | Task 1 | `Question 1/` |
 | Task 2 | `Question 2 - Leaderboard/` |
 
@@ -55,11 +49,7 @@ The goal is to forecast the next 168 values of one series with an Autoformer mod
 | `results/submission_info.json` | P, E and the settings of the final model |
 | `results/` (the rest) | Results of every experiment, plus tables and figures |
 
-### The final model
 
-- It is the average of 10 small Autoformer models.
-- **P = 89,330** trainable parameters (10 models, 8,933 each).
-- **E = 40** training epochs (10 models, 4 epochs each).
 
 ### How to run
 
